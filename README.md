@@ -100,6 +100,12 @@ exit()
 python manage.py runserver
 ```
 
+## Desplegar en red local 
+
+```bash
+.\run.bat
+```
+
 Abrir en el navegador: `http://localhost:8000`
 
 ## Funcionalidades
