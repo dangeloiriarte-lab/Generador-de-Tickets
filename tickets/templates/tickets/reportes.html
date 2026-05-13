@@ -1,0 +1,552 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Reportes - Soporte Técnico{% endblock %}
+
+{% block extra_css %}
+<style>
+.svg-wrap {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.svg-wrap svg {
+    width: 100%;
+    height: 100%;
+}
+.svg-wrap a {
+    cursor: pointer;
+}
+.svg-wrap a:hover rect,
+.svg-wrap a:hover path {
+    filter: brightness(0.85);
+    transition: filter 0.2s;
+}
+
+/* Filtros */
+.filtro-activo-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    background: #e3f2fd;
+    border: 1px solid #90caf9;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+.filtro-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.6rem 0.3rem 0.8rem;
+    background: #fff;
+    border: 1px solid #3b82f6;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #1e3a5f;
+    text-decoration: none;
+    transition: background 0.15s;
+}
+.filtro-badge:hover { background: #eff6ff; }
+.filtro-badge .x {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: background 0.15s;
+}
+.filtro-badge .x:hover { background: #D92938; color: #fff; }
+.clear-all-btn { margin-left: auto; }
+
+/* Leyenda tipo tabla compacta */
+.resumen-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+}
+.resumen-block {
+    flex: 1 1 160px;
+    min-width: 140px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.5rem 0.7rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.resumen-block h3 {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    margin: 0 0 0.25rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    overflow-wrap: break-word;
+}
+.resumen-block .big {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #021373;
+    line-height: 1.2;
+}
+.resumen-block .items {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+.resumen-block .item {
+    font-size: 0.73rem;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    line-height: 1.3;
+}
+.resumen-block .item .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+/* Gráficos */
+.charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
+}
+.chart-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+}
+.chart-card h2 {
+    margin-bottom: 0.75rem;
+    color: var(--text);
+    font-size: 1.1rem;
+}
+.chart-card .chart-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+.chart-card .chart-body .svg-wrap {
+    flex: 1;
+    min-height: 220px;
+}
+/* Responsive */
+@media (max-width: 768px) {
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+    .resumen-block {
+        flex: 1 1 130px;
+        min-width: 120px;
+    }
+}
+
+/* Comparación de rangos */
+.comparison-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border, #e2e8f0);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 1.25rem;
+    overflow: hidden;
+}
+.comparison-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    background: var(--card-header, #f8fafc);
+    border-bottom: 1px solid var(--border, #e2e8f0);
+}
+.comparison-header h2 {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--text);
+}
+.comparison-body {
+    padding: 1rem;
+}
+.comparison-grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 1rem;
+    align-items: start;
+}
+.comparison-grid.no-vs {
+    grid-template-columns: 1fr 1fr;
+}
+.range-box {
+    background: var(--card-bg);
+    border: 1px solid var(--border, #e2e8f0);
+    border-radius: 8px;
+    padding: 0.75rem;
+}
+.range-box.range-1 { border-left: 4px solid #3b82f6; }
+.range-box.range-2 { border-left: 4px solid #f59e0b; }
+.range-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+.range-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #fff;
+}
+.range-1 .range-badge { background: #3b82f6; }
+.range-2 .range-badge { background: #f59e0b; }
+.range-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text);
+}
+.range-dates-row {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 0.5rem;
+    min-width: 0;
+}
+.range-dates-row input[type="date"] {
+    flex: 1 1 0;
+    min-width: 0;
+    width: 0;
+    padding: 0.3rem 0.4rem;
+    font-size: 0.78rem;
+    border: 1px solid var(--border, #cbd5e1);
+    border-radius: 5px;
+    background: var(--card-bg);
+    color: var(--text);
+    box-sizing: border-box;
+}
+.range-dates-row .date-sep {
+    color: #94a3b8;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+}
+.range-nav {
+    display: flex;
+    gap: 0.25rem;
+    margin-bottom: 0.6rem;
+}
+.nav-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    border: 1px solid var(--border, #e2e8f0);
+    background: var(--card-bg);
+    color: var(--text);
+    font-size: 1.1rem;
+    text-decoration: none;
+    transition: background 0.15s;
+}
+.nav-btn:hover { background: var(--border, #e2e8f0); }
+.nav-btn:active { background: #cbd5e1; }
+.range-total {
+    font-size: 1.8rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 0.4rem;
+}
+.range-1 .range-total { color: #3b82f6; }
+.range-2 .range-total { color: #f59e0b; }
+.range-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+.breakdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.78rem;
+    color: var(--text);
+}
+.breakdown-item .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 3px;
+    flex-shrink: 0;
+}
+.breakdown-item .count {
+    font-weight: 600;
+    margin-left: auto;
+}
+.vs-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #94a3b8;
+    padding: 0 0.25rem;
+    align-self: center;
+}
+.comparison-actions {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+.diff-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    padding: 0.6rem 1rem;
+    background: var(--card-header, #f8fafc);
+    border-radius: 8px;
+}
+.diff-label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #64748b;
+}
+.diff-value {
+    font-size: 1.3rem;
+    font-weight: 800;
+}
+.diff-pos { color: #16a34a; }
+.diff-neg { color: #dc2626; }
+.diff-zero { color: #64748b; }
+
+@media (max-width: 768px) {
+    .comparison-grid,
+    .comparison-grid.no-vs {
+        grid-template-columns: 1fr;
+    }
+    .vs-divider {
+        padding: 0.25rem 0;
+    }
+}
+
+/* Dark mode */
+[data-theme="dark"] .comparison-card { border-color: #334155; }
+[data-theme="dark"] .comparison-header { background: #1e293b; border-color: #334155; }
+[data-theme="dark"] .range-box { border-color: #334155; background: #1e293b; }
+[data-theme="dark"] .range-dates-row input[type="date"] { border-color: #475569; background: #0f172a; color: #e2e8f0; }
+[data-theme="dark"] .nav-btn { border-color: #475569; background: #1e293b; color: #e2e8f0; }
+[data-theme="dark"] .nav-btn:hover { background: #334155; }
+[data-theme="dark"] .diff-bar { background: #1e293b; }
+[data-theme="dark"] .filtro-activo-bar { background: rgba(5,151,242,0.15); border-color: #0597F2; }
+[data-theme="dark"] .filtro-badge { background: #1e293b; border-color: #3b82f6; color: #93c5fd; }
+[data-theme="dark"] .filtro-badge:hover { background: #0f172a; }
+[data-theme="dark"] .filtro-badge .x { background: #334155; color: #94a3b8; }
+[data-theme="dark"] .filtro-badge .x:hover { background: #D92938; color: #fff; }
+[data-theme="dark"] .resumen-block { background: #1e293b; border-color: #334155; }
+[data-theme="dark"] .resumen-block h3 { color: #64748b; }
+[data-theme="dark"] .resumen-block .big { color: #90caf9; }
+[data-theme="dark"] .resumen-block .item { color: #cbd5e1; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="reports-full-width">
+<div class="page-header">
+    <h1>{% if es_tecnico %}Mi Rendimiento{% else %}Reportes y Estadisticas{% endif %}</h1>
+</div>
+
+{% if total_filtrado >= 0 %}
+<div class="resumen-bar">
+    <div class="resumen-block">
+        <h3>Total</h3>
+        <div class="big">{{ total_filtrado }}</div>
+    </div>
+    <div class="resumen-block">
+        <h3>Por Estado</h3>
+        <div class="items">
+        {% for item in resumen_estado %}
+            <span class="item"><span class="dot" style="background:{{ item.color }};"></span> {{ item.label }}: {{ item.cantidad }} ({{ item.porcentaje }}%)</span>
+        {% endfor %}
+        </div>
+    </div>
+    <div class="resumen-block">
+        <h3>Por Tipo</h3>
+        <div class="items">
+        {% for item in resumen_tipo %}
+            <span class="item"><span class="dot" style="background:{{ item.color }};"></span> {{ item.label }}: {{ item.cantidad }} ({{ item.porcentaje }}%)</span>
+        {% endfor %}
+        </div>
+    </div>
+    {% if not es_tecnico %}
+    <div class="resumen-block">
+        <h3>Por Técnico</h3>
+        <div class="items">
+        {% for item in resumen_tecnico %}
+            <span class="item">{{ item.label }}: {{ item.cantidad }} ({{ item.porcentaje }}%)</span>
+        {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    <div class="resumen-block">
+        <h3>Por Dirección</h3>
+        <div class="items">
+        {% for item in resumen_area %}
+            <span class="item">{{ item.label }}: {{ item.cantidad }} ({{ item.porcentaje }}%)</span>
+        {% endfor %}
+        </div>
+    </div>
+    </div>
+{% endif %}
+
+{% if comparacion %}
+<div class="comparison-card">
+    <div class="comparison-header">
+        <h2>📊 {% if comparacion.modo == 'compare' %}Comparación de Rangos{% else %}Filtrar por Fechas{% endif %}</h2>
+    </div>
+    <div class="comparison-body">
+        <form class="comp-form" onsubmit="return submitCompForm(this)">
+        <div class="comparison-grid{% if comparacion.modo != 'compare' %} no-vs{% endif %}">
+            <div class="range-box range-1">
+                <div class="range-title">
+                    <span class="range-badge">R1</span>
+                    <span class="range-label">Rango 1 <small>(gráficas)</small></span>
+                </div>
+                <div class="range-dates-row">
+                    <input type="date" name="r1_desde" value="{{ comparacion.r1.desde|date:'Y-m-d' }}">
+                    <span class="date-sep">→</span>
+                    <input type="date" name="r1_hasta" value="{{ comparacion.r1.hasta|date:'Y-m-d' }}">
+                </div>
+                <div class="range-nav">
+                {% if comparacion.nav_r1_ant %}
+                    <a href="{{ comparacion.nav_r1_ant }}" class="nav-btn" title="Anterior">‹</a>
+                    <a href="{{ comparacion.nav_r1_sig }}" class="nav-btn" title="Siguiente">›</a>
+                {% endif %}
+                </div>
+                <div class="range-total">{{ comparacion.r1.total }}</div>
+            </div>
+
+{% if comparacion.modo == 'compare' %}
+            <div class="vs-divider">VS</div>
+{% endif %}
+
+            <div class="range-box range-2">
+                <div class="range-title">
+                    <span class="range-badge">R2</span>
+                    <span class="range-label">Rango 2</span>
+                </div>
+                <div class="range-dates-row">
+                    <input type="date" name="r2_desde" value="{{ comparacion.r2.desde|date:'Y-m-d' }}">
+                    <span class="date-sep">→</span>
+                    <input type="date" name="r2_hasta" value="{{ comparacion.r2.hasta|date:'Y-m-d' }}">
+                </div>
+                <div class="range-nav">
+                {% if comparacion.nav_r2_ant %}
+                    <a href="{{ comparacion.nav_r2_ant }}" class="nav-btn" title="Anterior">‹</a>
+                    <a href="{{ comparacion.nav_r2_sig }}" class="nav-btn" title="Siguiente">›</a>
+                {% endif %}
+                </div>
+                <div class="range-total">{{ comparacion.r2.total }}</div>
+            </div>
+        </div>
+
+        <div class="comparison-actions">
+            <button type="submit" class="btn btn-sm btn-primary">{% if comparacion.modo == 'compare' %}Actualizar rangos{% else %}Aplicar filtro{% endif %}</button>
+            <a href="{{ comparacion.clear_url }}" class="btn btn-sm btn-secondary">✕ Limpiar rangos</a>
+        </div>
+        </form>
+
+{% if comparacion.modo == 'compare' %}
+        <div class="diff-bar">
+            <span class="diff-label">Diferencia (R1 − R2):</span>
+            <span class="diff-value
+{% if comparacion.diff_total > 0 %}diff-pos{% elif comparacion.diff_total < 0 %}diff-neg{% else %}diff-zero{% endif %}">
+{% if comparacion.diff_total > 0 %}+{% endif %}{{ comparacion.diff_total }}
+            </span>
+        </div>
+{% endif %}
+    </div>
+</div>
+{% endif %}
+
+{% if hay_filtro %}
+<div class="filtro-activo-bar">
+    <span style="font-size:0.9rem;color:#475569;font-weight:500;">🔍 Filtros:</span>
+    {% for f in filtros_list %}
+    <span class="filtro-badge">
+        {{ f.label }}
+        <a href="{{ f.remove_url }}" class="x" title="Quitar este filtro">✕</a>
+    </span>
+    {% endfor %}
+    <a href="{{ clear_url }}" class="btn btn-sm btn-danger clear-all-btn">✕ Limpiar todo</a>
+</div>
+{% endif %}
+
+<div class="charts-grid">
+    <div class="chart-card">
+        <h2>Tickets por Estado</h2>
+        <div class="chart-body">
+            <div class="svg-wrap">{{ svg_estado|safe }}</div>
+        </div>
+    </div>
+
+    <div class="chart-card">
+        <h2>Tickets por Tipo de Falla</h2>
+        <div class="chart-body">
+            <div class="svg-wrap">{{ svg_tipo|safe }}</div>
+        </div>
+    </div>
+
+    <div class="chart-card">
+        <h2>Tickets por Dirección</h2>
+        <div class="chart-body">
+            <div class="svg-wrap">{{ svg_area|safe }}</div>
+        </div>
+    </div>
+
+    {% if not es_tecnico %}
+    <div class="chart-card">
+        <h2>Tickets por Técnico</h2>
+        <div class="chart-body">
+            <div class="svg-wrap">{{ svg_tecnico|safe }}</div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function submitCompForm(form) {
+    var params = new URLSearchParams(window.location.search);
+    ['r1_desde','r1_hasta','r2_desde','r2_hasta'].forEach(function(k) { params.delete(k); });
+    var fd = new FormData(form);
+    for (var pair of fd.entries()) {
+        if (pair[1]) params.set(pair[0], pair[1]);
+    }
+    window.location.search = params.toString();
+    return false;
+}
+</script>
+{% endblock %}

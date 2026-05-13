@@ -1,0 +1,19 @@
+paso 1: abrir vscode (y abrir un terminal dentro de el)
+
+paso 2: escribir wsl
+
+paso 3: escribir opencode
+
+
+Abrir un segundo terminal para ir probando en ese segundo terminal
+
+paso 1: eliminar el entorno virtual actual si la version viene desde otra computadora 
+(carpeta llamada: .venv)
+
+paso 2: crear un nuevo entorno virtual: python -m venv .venv
+
+paso 3: escribir .\.venv\Scripts\Activate.ps1
+
+paso 4: instalar requerimientos: pip install -r requirements.txt
+
+paso 5: ejecutar la app con: python manage.py runserver (Desplegar app en red local: .\run.bat)

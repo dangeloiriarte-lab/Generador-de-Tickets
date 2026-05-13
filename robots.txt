@@ -1,0 +1,11 @@
+User-agent: *
+Disallow: /dashboard/
+Disallow: /tickets/
+Disallow: /mi-panel/
+Disallow: /reportes/
+Disallow: /notificaciones/
+Disallow: /auditoria/
+Disallow: /gestion-usuarios/
+Disallow: /admin/
+Disallow: /login/
+Disallow: /static/

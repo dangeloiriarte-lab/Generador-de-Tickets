@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Detalle de Auditoría - Soporte Técnico{% endblock %}
+
+{% block extra_css %}
+<style>
+.detail-container { max-width: 700px; margin: 0 auto; }
+.detail-container h1 { color: var(--text, #1e293b); border-bottom: 3px solid #D92938; padding-bottom: 10px; margin-bottom: 20px; font-size: 24px; }
+.detail-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+.detail-table th, .detail-table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border, #e2e8f0); }
+.detail-table th { width: 160px; background: var(--table-header-bg, #f8fafc); color: var(--text, #1e293b); font-weight: 600; font-size: 13px; }
+.detail-table tr:nth-child(even) td { background: transparent; }
+.detail-table code { background: var(--table-hover-bg, #f1f5f9); padding: 2px 8px; border-radius: 4px; font-size: 13px; }
+.badge-accion-detalle { display: inline-block; padding: 4px 14px; border-radius: 12px; font-size: 13px; font-weight: 600; }
+.badge-login { background: #dcfce7; color: #166534; }
+.badge-login-failed { background: #fee2e2; color: #991b1b; }
+.badge-logout { background: #f3e8ff; color: #6b21a8; }
+.badge-crear { background: #dbeafe; color: #1e40af; }
+.badge-editar { background: #fef3c7; color: #92400e; }
+.badge-eliminar { background: #fee2e2; color: #991b1b; }
+.badge-acceso { background: #e0f2fe; color: #075985; }
+.badge-cambiar-password { background: #fce7f3; color: #9d174d; }
+[data-theme="dark"] .badge-login { background: #064e3b; color: #6ee7b7; }
+[data-theme="dark"] .badge-acceso { background: #0c4a6e; color: #7dd3fc; }
+[data-theme="dark"] .badge-login-failed { background: #7f1d1d; color: #fca5a5; }
+[data-theme="dark"] .badge-logout { background: #4c1d95; color: #d8b4fe; }
+[data-theme="dark"] .badge-crear { background: #1e3a5f; color: #93c5fd; }
+[data-theme="dark"] .badge-editar { background: #78350f; color: #fcd34d; }
+[data-theme="dark"] .badge-eliminar { background: #7f1d1d; color: #fca5a5; }
+[data-theme="dark"] .badge-cambiar-password { background: #831843; color: #f9a8d4; }
+.detail-box { background: var(--card-bg, #ffffff); border: 1px solid var(--border, #e2e8f0); border-radius: 8px; padding: 15px; margin-top: 10px; white-space: pre-wrap; font-size: 14px; line-height: 1.6; color: var(--text, #1e293b); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="detail-container">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+        <h1>📋 Detalle de Auditoría</h1>
+        <a href="{% url 'auditoria_list' %}" class="btn btn-secondary">&larr; Volver</a>
+    </div>
+
+    <div class="card" style="padding: 1.25rem;">
+        <table class="detail-table">
+            <tr>
+                <th>Usuario</th>
+                <td><strong>{{ registro.nombre_completo }}</strong></td>
+            </tr>
+            <tr>
+                <th>Dirección/Departamento</th>
+                <td>{{ registro.direccion_area|default:'-' }}</td>
+            </tr>
+            <tr>
+                <th>Acción</th>
+                <td>
+                    <span class="badge-accion-detalle badge-{{ registro.accion|lower }}">
+                        {{ registro.get_accion_display }}
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <th>Modelo afectado</th>
+                <td>{{ registro.modelo }}</td>
+            </tr>
+            {% if registro.id_objeto %}
+            <tr>
+                <th>ID del objeto</th>
+                <td><code>{{ registro.id_objeto }}</code></td>
+            </tr>
+            {% endif %}
+            <tr>
+                <th>Dirección IP</th>
+                <td><code>{{ registro.direccion_ip }}</code></td>
+            </tr>
+            <tr>
+                <th>Fecha/Hora</th>
+                <td>{{ registro.fecha|date:"d/m/Y H:i:s" }}</td>
+            </tr>
+            {% if registro.detalles %}
+            <tr>
+                <th>Detalles</th>
+                <td>
+                    <div class="detail-box">{{ registro.detalles }}</div>
+                </td>
+            </tr>
+            {% endif %}
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,784 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Generador de Tickets{% endblock %}</title>
+    <link rel="icon" type="image/png" href="{% static 'img/logo.png' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=4">
+    <script src="{% static 'js/security.js' %}?v=1"></script>
+    <style>
+    :root {
+        --dropdown-bg: #ffffff;
+        --dropdown-text: #1e293b;
+        --dropdown-hover-bg: #f1f5f9;
+        --notif-panel-bg: #ffffff;
+        --notif-panel-header-bg: #f8fafc;
+        --notif-panel-header-text: #1e293b;
+        --notif-item-border: #f1f5f9;
+        --toast-bg: #1e293b;
+        --toast-text: #ffffff;
+        --toast-msg-color: #cbd5e1;
+        --text-light: #64748b;
+        --border: #e2e8f0;
+        --avatar-bg: #1e40af;
+    }
+    .navbar, .navbar-content, .navbar-links { overflow: visible; }
+    .nav-dropdown { position: relative; display: inline-block; }
+    .nav-dropdown .dropdown-toggle { cursor: pointer; }
+    .dropdown-menu { display: none; position: absolute; top: 100%; right: 0; background: var(--dropdown-bg, #ffffff); min-width: 200px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-radius: 6px; z-index: 1000; padding: 0.5rem 0; }
+    .dropdown-menu a { display: block; padding: 0.6rem 1.2rem; color: var(--dropdown-text, #1e293b) !important; text-decoration: none; font-size: 0.9rem; white-space: nowrap; }
+    .dropdown-menu a:hover { background: var(--dropdown-hover-bg, #f1f5f9); color: #3b82f6 !important; }
+    .nav-dropdown:hover .dropdown-menu { display: block; }
+    .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--avatar-bg); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; cursor: pointer; user-select: none; text-transform: uppercase; flex-shrink: 0; }
+    .user-avatar:hover { opacity: 0.85; }
+    .user-dropdown { position: relative; display: inline-flex; align-items: center; }
+    .user-dropdown .dropdown-menu { display: none; position: absolute; top: 100%; right: 0; min-width: 200px; background: var(--dropdown-bg,#ffffff); box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-radius: 6px; z-index: 1000; padding: 0.5rem 0; }
+    .user-dropdown.open .dropdown-menu { display: block; }
+    .user-dropdown .dropdown-menu .dropdown-header { padding: 0.6rem 1.2rem; color: var(--text-light,#64748b); font-size: 0.8rem; font-weight: 600; white-space: nowrap; border-bottom: 1px solid var(--border,#e2e8f0); margin-bottom: 0.25rem; }
+    .user-dropdown .dropdown-menu .dropdown-divider { height: 1px; background: var(--border,#e2e8f0); margin: 0.25rem 0; }
+    .user-dropdown .dropdown-menu a { display: block; padding: 0.6rem 1.2rem; color: var(--dropdown-text,#1e293b) !important; text-decoration: none; font-size: 0.9rem; white-space: nowrap; }
+    .user-dropdown .dropdown-menu a:hover { background: var(--dropdown-hover-bg,#f1f5f9); color: #3b82f6 !important; }
+    .notif-bell { position: relative; cursor: pointer; padding: 0.3rem 0.6rem; font-size: 1.2rem; color: #fff; text-decoration: none; }
+    .notif-bell:hover { opacity: 0.8; }
+    .notif-badge { position: absolute; top: -2px; right: 0; background: #ef4444; color: #fff; font-size: 0.65rem; font-weight: bold; min-width: 16px; height: 16px; border-radius: 8px; display: flex; align-items: center; justify-content: center; padding: 0 4px; }
+    .notif-panel { display: none; position: absolute; top: 100%; right: 0; background: var(--notif-panel-bg, #ffffff); min-width: 320px; max-height: 360px; overflow-y: auto; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-radius: 6px; z-index: 1001; padding: 0; }
+    .notif-panel.show { display: block; }
+    .notif-panel-header { padding: 0.7rem 1rem; background: var(--notif-panel-header-bg, #f8fafc); border-bottom: 1px solid var(--border, #e2e8f0); font-weight: bold; color: var(--notif-panel-header-text, #1e293b); font-size: 0.85rem; }
+    .notif-item { padding: 0.7rem 1rem; border-bottom: 1px solid var(--notif-item-border, #f1f5f9); cursor: pointer; transition: background 0.15s; }
+    .notif-item:hover { background: var(--dropdown-hover-bg, #f1f5f9); }
+    .notif-item a { color: var(--dropdown-text, #1e293b) !important; text-decoration: none; display: block; font-size: 0.85rem; line-height: 1.4; }
+    .notif-item a:hover { color: #3b82f6 !important; }
+    .notif-empty { padding: 1.5rem 1rem; text-align: center; color: var(--text-light, #64748b); font-size: 0.85rem; }
+    .notif-dropdown { position: relative; display: inline-block; }
+    .notif-dropdown .notif-panel { display: none; }
+    .notif-dropdown.open .notif-panel { display: block; }
+    .settings-toggle { cursor: pointer; padding: 0.3rem 0.6rem; font-size: 1.2rem; color: #fff; text-decoration: none; display: inline-flex; align-items: center; user-select: none; }
+    .settings-toggle:hover { opacity: 0.8; }
+    .navbar-toggler { display: none; background: none; border: none; color: #fff; font-size: 1.8rem; cursor: pointer; padding: 0.25rem 0.5rem; line-height: 1; }
+    .settings-mobile { display: none; }
+    .drawer-header { display: none; }
+
+    .nav-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10001; }
+    .nav-overlay.open { display: block; }
+    .settings-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 9998; }
+    .settings-overlay.open { display: block; }
+    .settings-panel { position: fixed; top: 0; right: -380px; width: 360px; height: 100%; background: var(--card-bg, #ffffff); box-shadow: -4px 0 12px rgba(0,0,0,0.15); z-index: 9999; transition: right 0.3s ease; display: flex; flex-direction: column; overflow-y: auto; }
+    .settings-panel.open { right: 0; }
+    .settings-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.25rem; border-bottom: 1px solid var(--border, #e2e8f0); background: var(--card-bg, #ffffff); position: sticky; top: 0; z-index: 1; }
+    .settings-header h3 { font-size: 1.1rem; color: var(--text, #1e293b); margin: 0; display: flex; align-items: center; gap: 0.5rem; }
+    .settings-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-light, #64748b); padding: 0; line-height: 1; }
+    .settings-close:hover { color: var(--text, #1e293b); }
+    .settings-body { padding: 1rem 1.25rem 2rem; }
+    .settings-section { margin-bottom: 1.5rem; }
+    .settings-section h4 { font-size: 0.85rem; text-transform: uppercase; color: var(--text-light, #64748b); margin-bottom: 0.75rem; letter-spacing: 0.5px; display: flex; align-items: center; gap: 0.5rem; }
+    .theme-options, .text-size-options, .position-options { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .theme-options button, .text-size-options button, .position-options button { flex: 1; min-width: 70px; padding: 0.5rem 0.75rem; border: 2px solid var(--border, #e2e8f0); border-radius: var(--radius, 8px); background: var(--card-bg, #ffffff); color: var(--text, #1e293b); cursor: pointer; font-size: 0.85rem; transition: all 0.15s; text-align: center; font-family: inherit; }
+    .theme-options button:hover, .text-size-options button:hover, .position-options button:hover { border-color: var(--primary, #3b82f6); }
+    .theme-options button.active, .text-size-options button.active, .position-options button.active { border-color: var(--primary, #3b82f6); background: rgba(59,130,246,0.1); color: var(--primary, #3b82f6); font-weight: 600; }
+    .sound-row { display: flex; gap: 0.5rem; align-items: center; }
+    .sound-row select { flex: 1; padding: 0.5rem 0.75rem; border: 1px solid var(--border, #e2e8f0); border-radius: var(--radius, 8px); font-size: 0.85rem; background: var(--card-bg, #ffffff); color: var(--text, #1e293b); font-family: inherit; }
+    .sound-row .btn-sound-preview { padding: 0.5rem 0.75rem; border: 1px solid var(--border, #e2e8f0); border-radius: var(--radius, 8px); background: var(--card-bg, #ffffff); color: var(--text, #1e293b); cursor: pointer; font-size: 0.85rem; white-space: nowrap; font-family: inherit; }
+    .sound-row .btn-sound-preview:hover { border-color: var(--primary, #3b82f6); color: var(--primary, #3b82f6); }
+
+    [data-theme="dark"] {
+        --card-bg: #1e293b;
+        --text: #e2e8f0;
+        --text-light: #94a3b8;
+        --border: #334155;
+        --toast-bg: #334155;
+        --toast-text: #f1f5f9;
+        --toast-msg-color: #94a3b8;
+        --dropdown-bg: #1e293b;
+        --dropdown-text: #e2e8f0;
+        --dropdown-hover-bg: #334155;
+        --notif-panel-bg: #1e293b;
+        --notif-panel-header-bg: #334155;
+        --notif-panel-header-text: #e2e8f0;
+        --avatar-bg: #60a5fa;
+        --notif-item-border: #334155;
+        --svg-text: #e2e8f0;
+    }
+    .toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column-reverse; gap: 8px; }
+    .toast { background: var(--toast-bg, #1e293b); color: var(--toast-text, #ffffff); padding: 12px 16px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); font-size: 0.85rem; max-width: 360px; cursor: pointer; }
+    .toast:hover { opacity: 0.9; }
+    .toast-title { font-weight: bold; margin-bottom: 2px; }
+    .toast-msg { color: var(--toast-msg-color, #cbd5e1); }
+    .toast-container.pos-top-right { top: 80px; right: 20px; bottom: auto; left: auto; }
+    .toast-container.pos-top-left { top: 80px; left: 20px; bottom: auto; right: auto; }
+    .toast-container.pos-bottom-left { bottom: 20px; left: 20px; top: auto; right: auto; }
+    @keyframes toast-in { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes toast-out { from { opacity: 1; } to { opacity: 0; transform: translateX(100px); } }
+    @keyframes toast-in-left { from { opacity: 0; transform: translateX(-100px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes toast-out-left { from { opacity: 1; } to { opacity: 0; transform: translateX(-100px); } }
+    @media (max-width: 768px) {
+        .navbar-toggler { display: block; }
+        .navbar-content { flex-wrap: nowrap; }
+        .navbar-links { position: fixed; top: 0; left: -300px; width: 280px; height: 100%; z-index: 10002; display: flex; flex-direction: column; background: var(--card-bg, #ffffff); box-shadow: 4px 0 12px rgba(0,0,0,0.15); transition: left 0.3s ease; padding: 0; gap: 0; overflow-y: auto; }
+        .navbar-links.open { left: 0; display: flex; }
+        .navbar-links .drawer-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.25rem; border-bottom: 1px solid var(--border, #e2e8f0); background: var(--navbar-bg, #3b82f6); color: #fff; flex-shrink: 0; }
+        .navbar-links .drawer-header .drawer-brand { font-weight: 700; font-size: 1rem; }
+        .navbar-links .drawer-header .drawer-close { background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; padding: 0; line-height: 1; }
+        .navbar-links > a { padding: 0.85rem 1.25rem; width: 100%; text-align: left; color: var(--text, #1e293b); border-bottom: 1px solid var(--border, #e2e8f0); box-sizing: border-box; font-size: 0.9rem; text-decoration: none; display: block; }
+        .navbar-links > a:last-of-type { border-bottom: none; }
+        .navbar-links > a:hover { background: var(--dropdown-hover-bg, #f1f5f9); }
+        .navbar-links .notif-dropdown, .navbar-links .nav-dropdown, .navbar-links .user-dropdown { width: 100%; border-bottom: 1px solid var(--border, #e2e8f0); }
+        .navbar-links .notif-dropdown .notif-bell, .navbar-links .nav-dropdown .dropdown-toggle { display: block; padding: 0.85rem 1.25rem; color: var(--text, #1e293b); font-size: 0.9rem; cursor: pointer; }
+        .navbar-links .notif-dropdown .notif-bell:hover, .navbar-links .nav-dropdown .dropdown-toggle:hover { background: var(--dropdown-hover-bg, #f1f5f9); }
+        .navbar-links .notif-dropdown .notif-panel { position: static; width: 100%; max-height: 260px; box-shadow: none; border-radius: 0; border-top: 1px solid var(--border, #e2e8f0); background: var(--table-header-bg, #f8fafc); }
+        .navbar-links .nav-dropdown .dropdown-menu { position: static; box-shadow: none; border-radius: 0; width: 100%; border-top: 1px solid var(--border, #e2e8f0); background: var(--table-header-bg, #f8fafc); }
+        .navbar-links .nav-dropdown.open .dropdown-menu { display: block; }
+        .navbar-links > .settings-toggle { display: block; padding: 0.85rem 1.25rem; width: 100%; text-align: left; color: var(--text, #1e293b); font-size: 0.9rem; border-bottom: 1px solid var(--border, #e2e8f0); box-sizing: border-box; }
+        .navbar-links > .settings-toggle:hover { background: var(--dropdown-hover-bg, #f1f5f9); }
+        .settings-mobile { display: none; padding: 0.75rem 1.25rem 1rem; background: var(--table-header-bg, #f8fafc); border-bottom: 1px solid var(--border, #e2e8f0); }
+        .settings-mobile.open { display: block; }
+        .settings-mobile .settings-section { margin-bottom: 0.75rem; }
+        .settings-mobile .settings-section h4 { font-size: 0.75rem; text-transform: uppercase; color: var(--text-light, #64748b); margin-bottom: 0.4rem; letter-spacing: 0.5px; display: flex; align-items: center; gap: 0.3rem; }
+        .settings-mobile .theme-options, .settings-mobile .text-size-options, .settings-mobile .position-options { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+        .settings-mobile .theme-options button, .settings-mobile .text-size-options button, .settings-mobile .position-options button { flex: 1; min-width: 55px; padding: 0.35rem 0.4rem; border: 1px solid var(--border, #e2e8f0); border-radius: 6px; background: var(--card-bg, #fff); color: var(--text, #1e293b); cursor: pointer; font-size: 0.75rem; text-align: center; font-family: inherit; }
+        .settings-mobile .theme-options button.active, .settings-mobile .text-size-options button.active, .settings-mobile .position-options button.active { border-color: var(--primary, #3b82f6); background: rgba(59,130,246,0.1); color: var(--primary, #3b82f6); font-weight: 600; }
+        .settings-mobile .sound-row { display: flex; gap: 0.3rem; align-items: center; }
+        .settings-mobile .sound-row select { flex: 1; padding: 0.35rem 0.4rem; border: 1px solid var(--border, #e2e8f0); border-radius: 6px; font-size: 0.75rem; background: var(--card-bg, #fff); color: var(--text, #1e293b); font-family: inherit; }
+        .settings-mobile .sound-row .btn-sound-preview { padding: 0.35rem 0.4rem; border: 1px solid var(--border, #e2e8f0); border-radius: 6px; background: var(--card-bg, #fff); color: var(--text, #1e293b); cursor: pointer; font-size: 0.75rem; white-space: nowrap; font-family: inherit; }
+        .settings-mobile .sound-row .btn-sound-preview:hover { border-color: var(--primary, #3b82f6); }
+        .navbar-links .user-dropdown { width: 100%; border-bottom: 1px solid var(--border,#e2e8f0); display: block; }
+        .navbar-links .user-dropdown .user-avatar { display: flex; align-items: center; gap: 0.5rem; padding: 0.85rem 1.25rem; color: var(--text,#1e293b); font-size: 0.9rem; cursor: pointer; background: none; width: auto; height: auto; border-radius: 0; font-weight: 500; text-transform: none; justify-content: flex-start; }
+        .navbar-links .user-dropdown .user-avatar .avatar-letter { display: inline-flex; width: 28px; height: 28px; border-radius: 50%; background: var(--avatar-bg); color: #fff; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; flex-shrink: 0; }
+        .navbar-links .user-dropdown .dropdown-menu { position: static; box-shadow: none; border-radius: 0; width: 100%; border-top: 1px solid var(--border,#e2e8f0); background: var(--table-header-bg,#f8fafc); }
+        .navbar-links .user-dropdown .dropdown-menu .dropdown-header { color: var(--text-light,#64748b); font-size: 0.8rem; }
+        .navbar-links .btn-danger { display: block; margin: 0.5rem 1.25rem; padding: 0.6rem 1rem; text-align: center; }
+        .navbar-links .notif-badge { top: 50%; right: 1.25rem; transform: translateY(-50%); }
+        .navbar-links .dropdown-toggle::after { display: none; }
+    }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body{% block body_attrs %}{% endblock %} class="anti-select">
+    <div class="info-icon-wrapper">
+        <img src="{% static 'img/info.png' %}" alt="Información" class="info-icon">
+        <span class="info-tooltip">Creado por:<br>Ing. D'angelo Iriarte</span>
+    </div>
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <span class="navbar-brand">
+                Dirección de Tecnología
+            </span>
+            <button class="navbar-toggler" id="navbarToggler" aria-label="Menú" onclick="toggleNavbar()">☰</button>
+            <div class="navbar-links">
+                <div class="drawer-header">
+                    <span class="drawer-brand">Dirección de Tecnología</span>
+                    <button class="drawer-close" onclick="toggleNavbar()">&times;</button>
+                </div>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'dashboard' %}">Dashboard</a>
+                    <a href="{% url 'reportes' %}">Reportes</a>
+                    <div class="notif-dropdown" id="notifDropdown">
+                        <span class="notif-bell" id="notifBell">🔔<span class="notif-badge" id="notifBadge" style="display:none;">0</span></span>
+                        <div class="notif-panel" id="notifPanel">
+                            <div class="notif-panel-header">Notificaciones</div>
+                            <div id="notifList"><div class="notif-empty">No hay notificaciones</div></div>
+                        </div>
+                    </div>
+                    <span class="settings-toggle" onclick="toggleSettings(this)">⚙️</span>
+                    <div class="settings-mobile">
+                        <div class="settings-section">
+                            <h4>🌗 Tema</h4>
+                            <div class="theme-options">
+                                <button data-value="light" onclick="applyTheme('light')">☀️ Claro</button>
+                                <button data-value="dark" onclick="applyTheme('dark')">🌙 Oscuro</button>
+                                <button data-value="system" onclick="applyTheme('system')">💻 Sistema</button>
+                            </div>
+                        </div>
+                        <div class="settings-section">
+                            <h4>🔤 Tamaño de texto</h4>
+                            <div class="text-size-options">
+                                <button data-value="small" onclick="applyTextSize('small')">Pequeño</button>
+                                <button data-value="medium" onclick="applyTextSize('medium')">Mediano</button>
+                                <button data-value="large" onclick="applyTextSize('large')">Grande</button>
+                            </div>
+                        </div>
+                        <div class="settings-section">
+                            <h4>🔊 Sonido notificación</h4>
+                            <div class="sound-row">
+                                <select class="notif-sound-select" onchange="applySound(this.value)">
+                                    <option value="n1.mp3">n1.mp3</option>
+                                    <option value="n2.mp3">n2.mp3</option>
+                                    <option value="n3.mp3">n3.mp3</option>
+                                    <option value="n4.mp3">n4.mp3</option>
+                                    <option value="n5.mp3">n5.mp3</option>
+                                    <option value="n6.mp3">n6.mp3</option>
+                                    <option value="n7.mp3">n7.mp3</option>
+                                </select>
+                                <button class="btn-sound-preview" onclick="previewSound()">▶ Vista</button>
+                            </div>
+                        </div>
+                        <div class="settings-section">
+                            <h4>📍 Posición notificación</h4>
+                            <div class="position-options">
+                                <button data-value="bottom-right" onclick="applyToastPosition('bottom-right')">⬇➡</button>
+                                <button data-value="bottom-left" onclick="applyToastPosition('bottom-left')">⬇⬅</button>
+                                <button data-value="top-right" onclick="applyToastPosition('top-right')">⬆➡</button>
+                                <button data-value="top-left" onclick="applyToastPosition('top-left')">⬆⬅</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="nav-dropdown">
+                        <a href="javascript:void(0)" class="dropdown-toggle" onclick="toggleDropdown(event)">Ayuda ▾</a>
+                        <div class="dropdown-menu">
+                            <a href="{% url 'ayuda_manual' %}">Manual de Usuario</a>
+                            <a href="{% url 'ayuda_guia_rapida' %}">Guía Rápida</a>
+                            <a href="{% url 'ayuda_acerca_de' %}">Acerca de</a>
+                        </div>
+                    </div>
+                    <div class="nav-dropdown user-dropdown">
+                        <div class="user-avatar" onclick="toggleUserMenu(event)"><span class="avatar-letter">{{ user.get_full_name|default:user.username|first|upper }}</span></div>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-header">{{ user.get_full_name|default:user.username }}</div>
+                            {% if user.groups.first.name == 'Administrador' %}
+                                <a href="{% url 'gestion_usuarios' %}">Usuarios</a>
+                                <a href="{% url 'auditoria_list' %}">Auditoría</a>
+                            {% endif %}
+                            <div class="dropdown-divider"></div>
+                            <a href="{% url 'logout' %}">Cerrar sesión</a>
+                        </div>
+                    </div>
+                {% elif request.session.usuario_nombre %}
+                    <a href="{% url 'panel_usuario' %}">Mi Panel</a>
+                    <div class="notif-dropdown" id="notifDropdownUser">
+                        <span class="notif-bell" id="notifBellUser">🔔<span class="notif-badge" id="notifBadgeUser" style="display:none;">0</span></span>
+                        <div class="notif-panel" id="notifPanelUser">
+                            <div class="notif-panel-header">Notificaciones</div>
+                            <div id="notifListUser"><div class="notif-empty">No hay notificaciones</div></div>
+                        </div>
+                    </div>
+                    <span class="settings-toggle" onclick="toggleSettings(this)">⚙️</span>
+                    <div class="settings-mobile">
+                        <div class="settings-section">
+                            <h4>🌗 Tema</h4>
+                            <div class="theme-options">
+                                <button data-value="light" onclick="applyTheme('light')">☀️ Claro</button>
+                                <button data-value="dark" onclick="applyTheme('dark')">🌙 Oscuro</button>
+                                <button data-value="system" onclick="applyTheme('system')">💻 Sistema</button>
+                            </div>
+                        </div>
+                        <div class="settings-section">
+                            <h4>🔤 Tamaño de texto</h4>
+                            <div class="text-size-options">
+                                <button data-value="small" onclick="applyTextSize('small')">Pequeño</button>
+                                <button data-value="medium" onclick="applyTextSize('medium')">Mediano</button>
+                                <button data-value="large" onclick="applyTextSize('large')">Grande</button>
+                            </div>
+                        </div>
+                        <div class="settings-section">
+                            <h4>🔊 Sonido notificación</h4>
+                            <div class="sound-row">
+                                <select class="notif-sound-select" onchange="applySound(this.value)">
+                                    <option value="n1.mp3">n1.mp3</option>
+                                    <option value="n2.mp3">n2.mp3</option>
+                                    <option value="n3.mp3">n3.mp3</option>
+                                    <option value="n4.mp3">n4.mp3</option>
+                                    <option value="n5.mp3">n5.mp3</option>
+                                    <option value="n6.mp3">n6.mp3</option>
+                                    <option value="n7.mp3">n7.mp3</option>
+                                </select>
+                                <button class="btn-sound-preview" onclick="previewSound()">▶ Vista</button>
+                            </div>
+                        </div>
+                        <div class="settings-section">
+                            <h4>📍 Posición notificación</h4>
+                            <div class="position-options">
+                                <button data-value="bottom-right" onclick="applyToastPosition('bottom-right')">⬇➡</button>
+                                <button data-value="bottom-left" onclick="applyToastPosition('bottom-left')">⬇⬅</button>
+                                <button data-value="top-right" onclick="applyToastPosition('top-right')">⬆➡</button>
+                                <button data-value="top-left" onclick="applyToastPosition('top-left')">⬆⬅</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="nav-dropdown">
+                        <a href="javascript:void(0)" class="dropdown-toggle" onclick="toggleDropdown(event)">Ayuda ▾</a>
+                        <div class="dropdown-menu">
+                            <a href="{% url 'ayuda_manual' %}">Manual de Usuario</a>
+                            <a href="{% url 'ayuda_guia_rapida' %}">Guía Rápida</a>
+                            <a href="{% url 'ayuda_acerca_de' %}">Acerca de</a>
+                        </div>
+                    </div>
+                    <div class="nav-dropdown user-dropdown">
+                        <div class="user-avatar" onclick="toggleUserMenu(event)"><span class="avatar-letter">{{ request.session.usuario_nombre|first|upper }}</span></div>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-header">{{ request.session.usuario_nombre }}</div>
+                            <div class="dropdown-divider"></div>
+                            <a href="{% url 'cerrar_sesion_usuario' %}">Cerrar sesión</a>
+                        </div>
+                    </div>
+                {% else %}
+                    <a href="{% url 'panel_usuario_login' %}">Mi Panel</a>
+                    <div class="nav-dropdown">
+                        <a href="javascript:void(0)" class="dropdown-toggle" onclick="toggleDropdown(event)">Ayuda ▾</a>
+                        <div class="dropdown-menu">
+                            <a href="{% url 'ayuda_manual' %}">Manual de Usuario</a>
+                            <a href="{% url 'ayuda_guia_rapida' %}">Guía Rápida</a>
+                            <a href="{% url 'ayuda_acerca_de' %}">Acerca de</a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mt-4">
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 Sistema de Soporte Técnico. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <div class="nav-overlay" id="navOverlay" onclick="toggleNavbar()"></div>
+    <div class="settings-overlay" id="settingsOverlay" onclick="toggleSettings()"></div>
+    <div class="settings-panel" id="settingsPanel">
+        <div class="settings-header">
+            <h3>⚙️ Ajustes</h3>
+            <button class="settings-close" onclick="toggleSettings()">&times;</button>
+        </div>
+        <div class="settings-body">
+            <div class="settings-section">
+                <h4>🌗 Tema</h4>
+                <div class="theme-options">
+                    <button data-value="light" onclick="applyTheme('light')">☀️ Claro</button>
+                    <button data-value="dark" onclick="applyTheme('dark')">🌙 Oscuro</button>
+                    <button data-value="system" onclick="applyTheme('system')">💻 Sistema</button>
+                </div>
+            </div>
+            <div class="settings-section">
+                <h4>🔤 Tamaño de texto</h4>
+                <div class="text-size-options">
+                    <button data-value="small" onclick="applyTextSize('small')">Pequeño</button>
+                    <button data-value="medium" onclick="applyTextSize('medium')">Mediano</button>
+                    <button data-value="large" onclick="applyTextSize('large')">Grande</button>
+                </div>
+            </div>
+            <div class="settings-section">
+                <h4>🔊 Sonido notificación</h4>
+                <div class="sound-row">
+                    <select id="notifSoundSelect" onchange="applySound(this.value)">
+                        <option value="n1.mp3">n1.mp3</option>
+                        <option value="n2.mp3">n2.mp3</option>
+                        <option value="n3.mp3">n3.mp3</option>
+                        <option value="n4.mp3">n4.mp3</option>
+                        <option value="n5.mp3">n5.mp3</option>
+                        <option value="n6.mp3">n6.mp3</option>
+                        <option value="n7.mp3">n7.mp3</option>
+                    </select>
+                    <button class="btn-sound-preview" onclick="previewSound()">▶ Vista</button>
+                </div>
+            </div>
+            <div class="settings-section">
+                <h4>📍 Posición notificación</h4>
+                <div class="position-options">
+                    <button data-value="bottom-right" onclick="applyToastPosition('bottom-right')">⬇➡</button>
+                    <button data-value="bottom-left" onclick="applyToastPosition('bottom-left')">⬇⬅</button>
+                    <button data-value="top-right" onclick="applyToastPosition('top-right')">⬆➡</button>
+                    <button data-value="top-left" onclick="applyToastPosition('top-left')">⬆⬅</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% block extra_js %}{% endblock %}
+    <script>
+    (function() {
+        if (document.cookie.indexOf('real_ip=') === -1) {
+            fetch('https://api.ipify.org?format=json')
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    document.cookie = 'real_ip=' + data.ip + '; path=/; max-age=86400';
+                })
+                .catch(function() {});
+        }
+    })();
+    </script>
+    {% if user.is_authenticated %}
+    <script>
+    var notifUltimoId = 0;
+    var pollInterval = null;
+
+    function cargarNotificaciones() {
+        fetch('/notificaciones/')
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                var badge = document.getElementById('notifBadge');
+                var lista = document.getElementById('notifList');
+                if (data.total > 0) {
+                    badge.textContent = data.total;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+                var html = '';
+                data.notificaciones.forEach(function(n) {
+                    var url = n.url || '#';
+                    html += '<div class="notif-item" data-id="' + n.id + '"><a href="' + url + '">' + n.mensaje + '</a></div>';
+                    if (n.id > notifUltimoId) {
+                        notifUltimoId = n.id;
+                        mostrarToast(n.mensaje, n.url);
+                    }
+                });
+                if (!html) html = '<div class="notif-empty">No hay notificaciones</div>';
+                lista.innerHTML = html;
+                document.querySelectorAll('.notif-item').forEach(function(item) {
+                    item.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        var id = this.getAttribute('data-id');
+                        var link = this.querySelector('a');
+                        var url = link ? link.getAttribute('href') : '#';
+                        fetch('/notificaciones/' + id + '/leer/', { method: 'GET', keepalive: true });
+                        document.getElementById('notifDropdown').classList.remove('open');
+                        if (url && url !== '#') {
+                            window.location.href = url;
+                        }
+                    });
+                });
+            })
+            .catch(function() {});
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        cargarNotificaciones();
+        pollInterval = setInterval(cargarNotificaciones, 30000);
+
+        document.getElementById('notifBell').addEventListener('click', function(e) {
+            e.stopPropagation();
+            document.getElementById('notifDropdown').classList.toggle('open');
+        });
+        document.addEventListener('click', function(e) {
+            if (!document.getElementById('notifDropdown').contains(e.target)) {
+                document.getElementById('notifDropdown').classList.remove('open');
+            }
+        });
+    });
+    </script>
+    {% endif %}
+
+    <script>
+    var SOUND_BASE_URL = '{% static "sound/n1.mp3" %}'.replace('n1.mp3', '');
+    var NOTIF_SOUND_URL = SOUND_BASE_URL + 'n1.mp3';
+    var notifAudio = null;
+
+    function preloadNotifSound() {
+        notifAudio = new Audio(NOTIF_SOUND_URL);
+        notifAudio.volume = 0.5;
+        notifAudio.preload = 'auto';
+    }
+
+    function unlockNotifSound() {
+        if (!notifAudio) preloadNotifSound();
+        notifAudio.play().then(function() {
+            notifAudio.pause();
+            notifAudio.currentTime = 0;
+        }).catch(function() {});
+        document.removeEventListener('click', unlockNotifSound);
+        document.removeEventListener('touchstart', unlockNotifSound);
+        document.removeEventListener('keydown', unlockNotifSound);
+    }
+
+    document.addEventListener('click', unlockNotifSound);
+    document.addEventListener('touchstart', unlockNotifSound);
+    document.addEventListener('keydown', unlockNotifSound);
+
+    preloadNotifSound();
+
+    function playNotifSound() {
+        if (!notifAudio) preloadNotifSound();
+        notifAudio.currentTime = 0;
+        notifAudio.play().catch(function() {});
+    }
+
+    function mostrarToast(mensaje, url) {
+        playNotifSound();
+        var container = document.getElementById('toastContainer');
+        var isLeft = container.classList.contains('pos-top-left') || container.classList.contains('pos-bottom-left');
+        var toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.style.animation = (isLeft ? 'toast-in-left' : 'toast-in') + ' 0.3s ease';
+        toast.innerHTML = '<div class="toast-title">🔔 Notificación</div><div class="toast-msg">' + mensaje + '</div>';
+        toast.addEventListener('click', function() {
+            if (url) window.location.href = url;
+        });
+        container.appendChild(toast);
+        setTimeout(function() {
+            toast.style.animation = (isLeft ? 'toast-out-left' : 'toast-out') + ' 0.3s ease forwards';
+            setTimeout(function() { toast.remove(); }, 300);
+        }, 5000);
+    }
+
+    /* === Settings System === */
+    var SETTINGS_KEY = 'ticket_settings';
+    {% if user.is_authenticated %}
+    SETTINGS_KEY = 'ticket_settings_{{ user.id }}';
+    {% elif request.session.usuario_nombre %}
+    SETTINGS_KEY = 'ticket_settings_s_{{ request.session.usuario_nombre|slugify }}_{{ request.session.usuario_area|slugify }}';
+    {% endif %}
+
+    var settings = {
+        theme: 'system',
+        textSize: 'medium',
+        notifSound: 'n1.mp3',
+        toastPosition: 'bottom-right'
+    };
+
+    function isLoginPage() {
+        return document.querySelector('.login-container') !== null;
+    }
+
+    function loadSettings() {
+        if (isLoginPage()) return;
+        try {
+            var saved = localStorage.getItem(SETTINGS_KEY);
+            if (saved) {
+                var parsed = JSON.parse(saved);
+                for (var key in parsed) {
+                    if (parsed.hasOwnProperty(key) && settings.hasOwnProperty(key)) {
+                        settings[key] = parsed[key];
+                    }
+                }
+            }
+        } catch(e) {}
+
+        applyTheme(settings.theme, false);
+        applyTextSize(settings.textSize, false);
+        applySound(settings.notifSound, false);
+        applyToastPosition(settings.toastPosition, false);
+        updateSettingsUI();
+    }
+
+    function saveSettings() {
+        try {
+            localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+        } catch(e) {}
+    }
+
+    function toggleSettings(el) {
+        if (window.innerWidth <= 768 && el) {
+            var mobilePanel = el.nextElementSibling;
+            if (mobilePanel && mobilePanel.classList.contains('settings-mobile')) {
+                mobilePanel.classList.toggle('open');
+                return;
+            }
+        }
+        var overlay = document.getElementById('settingsOverlay');
+        var panel = document.getElementById('settingsPanel');
+        if (overlay) overlay.classList.toggle('open');
+        if (panel) panel.classList.toggle('open');
+    }
+
+    function applyTheme(val, save) {
+        settings.theme = val;
+        var html = document.documentElement;
+        if (val === 'system') {
+            var mq = window.matchMedia('(prefers-color-scheme: dark)');
+            if (mq.matches) {
+                html.setAttribute('data-theme', 'dark');
+            } else {
+                html.removeAttribute('data-theme');
+            }
+        } else if (val === 'dark') {
+            html.setAttribute('data-theme', 'dark');
+        } else {
+            html.removeAttribute('data-theme');
+        }
+        if (save !== false) { saveSettings(); updateSettingsUI(); }
+    }
+
+    function applyTextSize(val, save) {
+        settings.textSize = val;
+        document.documentElement.setAttribute('data-text-size', val);
+        if (save !== false) { saveSettings(); updateSettingsUI(); }
+    }
+
+    function applySound(val, save) {
+        settings.notifSound = val;
+        NOTIF_SOUND_URL = SOUND_BASE_URL + val;
+        if (notifAudio) {
+            notifAudio.src = NOTIF_SOUND_URL;
+            notifAudio.load();
+        }
+        if (save !== false) { saveSettings(); updateSettingsUI(); }
+    }
+
+    function applyToastPosition(val, save) {
+        settings.toastPosition = val;
+        var container = document.getElementById('toastContainer');
+        if (container) {
+            container.className = 'toast-container';
+            if (val !== 'bottom-right') {
+                container.classList.add('pos-' + val);
+            }
+        }
+        if (save !== false) { saveSettings(); updateSettingsUI(); }
+    }
+
+    function previewSound() {
+        var audio = new Audio(NOTIF_SOUND_URL);
+        audio.volume = 0.5;
+        audio.play().catch(function() {});
+    }
+
+    function updateSettingsUI() {
+        document.querySelectorAll('.theme-options button').forEach(function(btn) {
+            btn.classList.toggle('active', btn.getAttribute('data-value') === settings.theme);
+        });
+        document.querySelectorAll('.text-size-options button').forEach(function(btn) {
+            btn.classList.toggle('active', btn.getAttribute('data-value') === settings.textSize);
+        });
+        document.querySelectorAll('.notif-sound-select, #notifSoundSelect').forEach(function(el) {
+            if (el) el.value = settings.notifSound;
+        });
+        document.querySelectorAll('.position-options button').forEach(function(btn) {
+            btn.classList.toggle('active', btn.getAttribute('data-value') === settings.toastPosition);
+        });
+    }
+
+    loadSettings();
+
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function() {
+            if (settings.theme === 'system') {
+                var mq = window.matchMedia('(prefers-color-scheme: dark)');
+                if (mq.matches) {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                } else {
+                    document.documentElement.removeAttribute('data-theme');
+                }
+            }
+        });
+    }
+
+    /* === Hamburger Menu === */
+    function toggleNavbar() {
+        var links = document.querySelector('.navbar-links');
+        var overlay = document.getElementById('navOverlay');
+        var toggler = document.getElementById('navbarToggler');
+        if (!links) return;
+        var opening = !links.classList.contains('open');
+        links.classList.toggle('open');
+        if (overlay) overlay.classList.toggle('open');
+        toggler.textContent = opening ? '✕' : '☰';
+    }
+
+    function closeNavbar() {
+        var links = document.querySelector('.navbar-links');
+        var overlay = document.getElementById('navOverlay');
+        var toggler = document.getElementById('navbarToggler');
+        if (links) links.classList.remove('open');
+        if (overlay) overlay.classList.remove('open');
+        if (toggler) toggler.textContent = '☰';
+    }
+
+    function toggleDropdown(e) {
+        if (e) e.preventDefault();
+        var dropdown = e.target.closest('.nav-dropdown');
+        if (!dropdown) return;
+        dropdown.classList.toggle('open');
+    }
+
+    function toggleUserMenu(e) {
+        e.stopPropagation();
+        var dd = e.currentTarget.closest('.user-dropdown');
+        if (!dd) return;
+        dd.classList.toggle('open');
+    }
+
+    document.addEventListener('click', function(e) {
+        document.querySelectorAll('.user-dropdown.open').forEach(function(dd) {
+            if (!dd.contains(e.target)) {
+                dd.classList.remove('open');
+            }
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.navbar-links a:not(.dropdown-toggle):not(.drawer-close):not(.user-avatar)').forEach(function(link) {
+            link.addEventListener('click', function() {
+                closeNavbar();
+            });
+        });
+    });
+    </script>
+    {% if request.session.usuario_nombre %}
+    <script>
+    var userNotifUltimoId = 0;
+    var userPollInterval = null;
+
+    function cargarNotificacionesUsuario() {
+        fetch('/notificaciones-usuario/')
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                var badge = document.getElementById('notifBadgeUser');
+                var lista = document.getElementById('notifListUser');
+                if (data.total > 0) {
+                    badge.textContent = data.total;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+                var html = '';
+                data.notificaciones.forEach(function(n) {
+                    var url = n.url || '#';
+                    html += '<div class="notif-item" data-id="' + n.id + '"><a href="' + url + '">' + n.mensaje + '</a></div>';
+                    if (n.id > userNotifUltimoId) {
+                        userNotifUltimoId = n.id;
+                        mostrarToast(n.mensaje, n.url);
+                    }
+                });
+                if (!html) html = '<div class="notif-empty">No hay notificaciones</div>';
+                lista.innerHTML = html;
+                document.querySelectorAll('#notifListUser .notif-item').forEach(function(item) {
+                    item.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        var id = this.getAttribute('data-id');
+                        var link = this.querySelector('a');
+                        var url = link ? link.getAttribute('href') : '#';
+                        fetch('/notificaciones-usuario/' + id + '/leer/', { method: 'GET', keepalive: true });
+                        document.getElementById('notifDropdownUser').classList.remove('open');
+                        if (url && url !== '#') {
+                            window.location.href = url;
+                        }
+                    });
+                });
+            })
+            .catch(function() {});
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        cargarNotificacionesUsuario();
+        userPollInterval = setInterval(cargarNotificacionesUsuario, 30000);
+
+        document.getElementById('notifBellUser').addEventListener('click', function(e) {
+            e.stopPropagation();
+            document.getElementById('notifDropdownUser').classList.toggle('open');
+        });
+        document.addEventListener('click', function(e) {
+            if (!document.getElementById('notifDropdownUser').contains(e.target)) {
+                document.getElementById('notifDropdownUser').classList.remove('open');
+            }
+        });
+    });
+    </script>
+    {% endif %}
+</body>
+</html>

@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Crear Ticket - Soporte Técnico{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Reportar una Falla</h1>
+    <a href="{% url 'panel_usuario' %}" class="btn btn-secondary">&larr; Volver a Mi Panel</a>
+</div>
+
+<div class="card card-form">
+    <form method="post" class="form-ticket">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="{{ form.solicitante.id_for_label }}">Nombre del solicitante</label>
+            <input type="text" name="solicitante" id="{{ form.solicitante.id_for_label }}" class="form-control" value="{{ form.solicitante.value|default:'' }}" readonly>
+            <small class="text-muted">Identificado automaticamente</small>
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.contacto.id_for_label }}">Email/Contacto *</label>
+            {{ form.contacto }}
+            {% if form.contacto.errors %}
+                <span class="error">{{ form.contacto.errors.0 }}</span>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.direccion_area.id_for_label }}">Dirección/Departamento</label>
+            <input type="text" name="direccion_area" id="{{ form.direccion_area.id_for_label }}" class="form-control" value="{{ form.direccion_area.value|default:'' }}" readonly>
+            <small class="text-muted">Identificado automaticamente</small>
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.descripcion.id_for_label }}">Descripcion del problema *</label>
+            {{ form.descripcion }}
+            {% if form.descripcion.errors %}
+                <span class="error">{{ form.descripcion.errors.0 }}</span>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg btn-block">
+            Generar Ticket
+        </button>
+    </form>
+</div>
+{% endblock %}

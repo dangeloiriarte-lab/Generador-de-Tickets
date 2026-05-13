@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block title %}Crear Ticket - Soporte Técnico{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Nuevo Ticket</h1>
+    <a href="{% url 'dashboard' %}" class="btn btn-secondary">&larr; Volver al Dashboard</a>
+</div>
+
+<div class="card card-form">
+    <form method="post" class="form-ticket">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="{{ form.solicitante.id_for_label }}">Nombre del solicitante *</label>
+            {{ form.solicitante }}
+            {% if form.solicitante.errors %}
+                <span class="error">{{ form.solicitante.errors.0 }}</span>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.contacto.id_for_label }}">Email/Contacto *</label>
+            {{ form.contacto }}
+            {% if form.contacto.errors %}
+                <span class="error">{{ form.contacto.errors.0 }}</span>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.direccion_area.id_for_label }}">Dirección/Departamento *</label>
+            {{ form.direccion_area }}
+            {% if form.direccion_area.errors %}
+                <span class="error">{{ form.direccion_area.errors.0 }}</span>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label>Tipificación *</label>
+            <div class="checkbox-group" id="tipificaciones-checkboxes">
+                {% for checkbox in form.tipificaciones %}
+                    <label class="checkbox-label">
+                        {{ checkbox.tag }}
+                        {{ checkbox.choice_label }}
+                    </label>
+                {% endfor %}
+            </div>
+            {% if form.tipificaciones.errors %}
+                <span class="error">{{ form.tipificaciones.errors.0 }}</span>
+            {% endif %}
+            <small class="text-muted">Puede seleccionar una o más opciones</small>
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.descripcion.id_for_label }}">Descripcion del problema *</label>
+            {{ form.descripcion }}
+            {% if form.descripcion.errors %}
+                <span class="error">{{ form.descripcion.errors.0 }}</span>
+            {% endif %}
+        </div>
+
+        {% if es_admin or es_tecnico %}
+        <div class="asignacion-section">
+            <div class="asignacion-header">Asignación</div>
+
+            <div class="form-group" style="margin-bottom:0.5rem;">
+                <label class="toggle-switch">
+                    <input type="checkbox" name="atendere_yo" id="atendere_yo" onchange="toggleTecnicoField()">
+                    <span class="toggle-track"></span>
+                    <span class="toggle-label">
+                        Lo atenderé yo
+                        <small>Asignar este ticket a mi usuario</small>
+                    </span>
+                </label>
+            </div>
+
+            {% if es_admin %}
+            <div class="form-group" id="tecnico-field">
+                <label for="{{ form.tecnico_asignado.id_for_label }}">Asignar técnico</label>
+                {{ form.tecnico_asignado }}
+                {% if form.tecnico_asignado.errors %}
+                    <span class="error">{{ form.tecnico_asignado.errors.0 }}</span>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        <script>
+        function toggleTecnicoField() {
+            var checked = document.getElementById('atendere_yo').checked;
+            var field = document.getElementById('tecnico-field');
+            if (field) field.style.display = checked ? 'none' : 'block';
+        }
+        document.querySelectorAll('#tipificaciones-checkboxes input[type="checkbox"]').forEach(function(cb) {
+            cb.addEventListener('change', function() {
+                this.closest('.checkbox-label').classList.toggle('checked', this.checked);
+            });
+            if (cb.checked) {
+                cb.closest('.checkbox-label').classList.add('checked');
+            }
+        });
+        </script>
+        {% endif %}
+
+        <button type="submit" class="btn btn-primary btn-lg btn-block" style="margin-top:1.25rem;">
+            Generar Ticket
+        </button>
+    </form>
+</div>
+{% endblock %}

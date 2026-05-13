@@ -1,0 +1,42 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soporte Técnico - Sistema de Tickets</title>
+    <link rel="icon" type="image/png" href="{% static 'img/logo.png' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="{% static 'js/security.js' %}?v=1"></script>
+</head>
+<body class="landing-page anti-select">
+    <div class="info-icon-wrapper">
+        <img src="{% static 'img/info.png' %}" alt="Información" class="info-icon">
+        <span class="info-tooltip">Creado por:<br>Ing. D'angelo Iriarte</span>
+    </div>
+
+    <div class="landing-container">
+        <div class="landing-card">
+            <img src="{% static 'img/logo.png' %}" alt="Logo" class="landing-logo">
+            <h1>Soporte Técnico</h1>
+            <p class="landing-subtitle">Seleccione su tipo de acceso para continuar</p>
+
+            <div class="landing-buttons">
+                <a href="{% url 'panel_usuario_login' %}" class="landing-btn landing-btn-user">
+                    <span class="landing-icon">&#128100;</span>
+                    <span class="landing-btn-title">Soy Usuario</span>
+                    <span class="landing-btn-desc">Reportar fallas y consultar mis tickets</span>
+                </a>
+
+                <a href="{% url 'login' %}" class="landing-btn landing-btn-admin">
+                    <span class="landing-icon">&#128736;</span>
+                    <span class="landing-btn-title">Soy Administrador</span>
+                    <span class="landing-btn-desc">Gestionar tickets y generar reportes</span>
+                </a>
+            </div>
+        </div>
+
+        <p class="landing-footer">&copy; 2026 Sistema de Soporte Técnico. Todos los derechos reservados.</p>
+    </div>
+</body>
+</html>

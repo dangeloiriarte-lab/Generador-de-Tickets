@@ -1,0 +1,247 @@
+{% extends 'base.html' %}
+
+{% block title %}Gestion de Usuarios - Soporte Técnico{% endblock %}
+
+{% block extra_css %}
+<style>
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    align-items: center;
+    justify-content: center;
+}
+.modal.show {
+    display: flex;
+}
+.modal-content {
+    background: var(--card-bg, #fff);
+    border-radius: 8px;
+    padding: 2rem;
+    max-width: 420px;
+    width: 90%;
+    position: relative;
+    color: var(--text, #1e293b);
+}
+.modal-content h3 {
+    color: var(--text, #1e293b);
+    margin-bottom: 1rem;
+}
+.modal-close {
+    position: absolute;
+    right: 1rem;
+    top: 0.5rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-light, #666);
+}
+.modal-close:hover {
+    color: var(--text, #000);
+}
+.usuarios-table td:last-child { white-space: normal; }
+.usuarios-table td:last-child .btn { margin-bottom: 4px; }
+.table-responsive-mobile {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+@media (min-width: 769px) {
+    .table-responsive-mobile {
+        overflow-x: visible;
+    }
+}
+.btn-icon-only {
+    display: none;
+    vertical-align: middle;
+}
+.btn-icon-only svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+@media (max-width: 768px) {
+    .usuarios-table td:last-child .btn span.btn-text {
+        display: none;
+    }
+    .usuarios-table td:last-child .btn .btn-icon-only {
+        display: inline-block;
+    }
+    .usuarios-table td:last-child .btn {
+        padding: 0.4rem 0.5rem;
+        font-size: 0;
+        line-height: 1;
+        min-width: 36px;
+        text-align: center;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Gestion de Usuarios</h1>
+</div>
+
+<div class="card">
+    <h2>Crear Nuevo Usuario</h2>
+    <form method="post" class="form-ticket">
+        {% csrf_token %}
+        <input type="hidden" name="accion" value="crear">
+
+        <div class="form-group">
+            <label for="username">Nombre de usuario</label>
+            <input type="text" name="username" id="username" class="form-control" required placeholder="nombre_usuario">
+        </div>
+
+        <div class="form-group">
+            <label for="nombre_completo">Nombre y Apellido</label>
+            <input type="text" name="nombre_completo" id="nombre_completo" class="form-control" required placeholder="Nombre y Apellido">
+        </div>
+
+        <div class="form-group">
+            <label for="password">Contraseña</label>
+            <input type="password" name="password" id="password" class="form-control" required placeholder="Minimo 8 caracteres">
+        </div>
+
+        <div class="form-group">
+            <label for="grupo">Rol</label>
+            <select name="grupo" id="grupo" class="form-select" required>
+                <option value="">Seleccione un rol</option>
+                {% for grupo in grupos %}
+                    <option value="{{ grupo.name }}">{{ grupo.name }}</option>
+                {% endfor %}
+            </select>
+            <small style="color: var(--text-light, #64748b); display: block; margin-top: 4px;">
+                Los usuarios con rol Administrador o Técnico pertenecen automáticamente a la Dirección de Tecnología.
+            </small>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Crear Usuario</button>
+    </form>
+</div>
+
+<div class="card" style="margin-top: 1.5rem;">
+    <h2>Usuarios Existentes</h2>
+    {% if usuarios %}
+    <div class="table-responsive-mobile">
+    <table class="table usuarios-table">
+        <thead>
+            <tr>
+                <th>Usuario</th>
+                <th>Rol</th>
+                <th>Departamento</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for usuario in usuarios %}
+            <tr>
+                <td>{{ usuario.get_full_name|default:usuario.username }}</td>
+                <td>
+                    {% for grupo in usuario.groups.all %}
+                        <span class="badge badge-admin">{{ grupo.name }}</span>
+                    {% endfor %}
+                </td>
+                <td>Tecnología</td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-primary" onclick="openModal('editModal{{ usuario.pk }}')" aria-label="Editar usuario">
+                        <span class="btn-text">Editar</span>
+                        <span class="btn-icon-only"><svg viewBox="0 0 24 24"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></span>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-secondary" onclick="openModal('passwordModal{{ usuario.pk }}')" aria-label="Cambiar contraseña">
+                        <span class="btn-text">Cambiar Contraseña</span>
+                        <span class="btn-icon-only"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+                    </button>
+                    <form method="post" style="display: inline;" onsubmit="return confirm('¿Esta seguro de eliminar este usuario?');">
+                        {% csrf_token %}
+                        <input type="hidden" name="accion" value="eliminar">
+                        <input type="hidden" name="user_id" value="{{ usuario.pk }}">
+                        <button type="submit" class="btn btn-sm btn-danger" aria-label="Eliminar usuario">
+                            <span class="btn-text">Eliminar</span>
+                            <span class="btn-icon-only"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg></span>
+                        </button>
+                    </form>
+
+                    <div id="editModal{{ usuario.pk }}" class="modal">
+                        <div class="modal-content">
+                            <span class="modal-close" onclick="closeModal('editModal{{ usuario.pk }}')">&times;</span>
+                            <h3>Editar Usuario: {{ usuario.username }}</h3>
+                            <form method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="accion" value="editar">
+                                <input type="hidden" name="user_id" value="{{ usuario.pk }}">
+                                <div class="form-group">
+                                    <label>Nombre de usuario</label>
+                                    <input type="text" name="username" class="form-control" value="{{ usuario.username }}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Nombre y Apellido</label>
+                                    <input type="text" name="nombre_completo" class="form-control" value="{{ usuario.get_full_name }}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Rol</label>
+                                    <select name="grupo" class="form-select" required>
+                                        <option value="">Seleccione un rol</option>
+                                        {% for grupo in grupos %}
+                                            <option value="{{ grupo.name }}" {% for g in usuario.groups.all %}{% if g.name == grupo.name %}selected{% endif %}{% endfor %}>{{ grupo.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-block">Guardar Cambios</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div id="passwordModal{{ usuario.pk }}" class="modal">
+                        <div class="modal-content">
+                            <span class="modal-close" onclick="closeModal('passwordModal{{ usuario.pk }}')">&times;</span>
+                            <h3>Cambiar Contraseña: {{ usuario.username }}</h3>
+                            <form method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="accion" value="cambiar_password">
+                                <input type="hidden" name="user_id" value="{{ usuario.pk }}">
+                                <div class="form-group">
+                                    <label>Nueva Contraseña</label>
+                                    <input type="password" name="password" class="form-control" required placeholder="Minimo 8 caracteres">
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-block">Actualizar Contraseña</button>
+                            </form>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <p>No hay usuarios registrados.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function openModal(id) {
+    document.getElementById(id).classList.add('show');
+}
+function closeModal(id) {
+    document.getElementById(id).classList.remove('show');
+}
+window.onclick = function(event) {
+    if (event.target.classList.contains('modal')) {
+        event.target.classList.remove('show');
+    }
+}
+</script>
+{% endblock %}

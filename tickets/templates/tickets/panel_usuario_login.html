@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mi Panel - Usuarios{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="card card-login">
+        <div class="login-header">
+            <img src="{% static 'img/logo.png' %}" alt="Logo" class="login-logo">
+            <h1>Usuarios</h1>
+            <p>Ingrese su nombre y area para comenzar</p>
+        </div>
+
+        <form method="post" class="form-login">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="nombre">Nombre del Solicitante</label>
+                <input type="text" name="nombre" id="nombre" class="form-control" required placeholder="Su nombre completo"
+                    {% if request.session.usuario_nombre %}value="{{ request.session.usuario_nombre }}"{% endif %}>
+            </div>
+
+            <div class="form-group">
+                <label for="area">Dirección/Departamento</label>
+                <select name="area" id="area" class="form-select" required>
+                    <option value="">Seleccione una dirección/departamento</option>
+                    <option value="Auditoria Interna" {% if request.session.usuario_area == "Auditoria Interna" %}selected{% endif %}>Auditoria Interna</option>
+                    <option value="Consultoría Jurídica" {% if request.session.usuario_area == "Consultoría Jurídica" %}selected{% endif %}>Consultoría Jurídica</option>
+                    <option value="Corporación Caracas Productiva" {% if request.session.usuario_area == "Corporación Caracas Productiva" %}selected{% endif %}>Corporación Caracas Productiva</option>
+                    <option value="Despacho" {% if request.session.usuario_area == "Despacho" %}selected{% endif %}>Despacho</option>
+                    <option value="Estacionamiento" {% if request.session.usuario_area == "Estacionamiento" %}selected{% endif %}>Estacionamiento</option>
+                    <option value="Gestión Administrativa" {% if request.session.usuario_area == "Gestión Administrativa" %}selected{% endif %}>Gestión Administrativa</option>
+                    <option value="Mercado" {% if request.session.usuario_area == "Mercado" %}selected{% endif %}>Mercado</option>
+                    <option value="Oficina de atención al ciudadano" {% if request.session.usuario_area == "Oficina de atención al ciudadano" %}selected{% endif %}>Oficina de atención al ciudadano</option>
+                    <option value="Planificación y Presupuesto" {% if request.session.usuario_area == "Planificación y Presupuesto" %}selected{% endif %}>Planificación y Presupuesto</option>
+                    <option value="Producción y Gestión de Espacios Agricolas" {% if request.session.usuario_area == "Producción y Gestión de Espacios Agricolas" %}selected{% endif %}>Producción y Gestión de Espacios Agricolas</option>
+                    <option value="Secretaría" {% if request.session.usuario_area == "Secretaría" %}selected{% endif %}>Secretaría</option>
+                    <option value="Talento Humano" {% if request.session.usuario_area == "Talento Humano" %}selected{% endif %}>Talento Humano</option>
+                    <option value="Tecnología" {% if request.session.usuario_area == "Tecnología" %}selected{% endif %}>Tecnología</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg btn-block">
+                Entrar
+            </button>
+        </form>
+
+        <div class="login-footer">
+            <a href="{% url 'landing' %}">Volver a la pagina principal</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

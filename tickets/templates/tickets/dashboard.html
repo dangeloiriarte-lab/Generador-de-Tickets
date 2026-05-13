@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Soporte Técnico{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{% if es_tecnico %}Mis Tickets Asignados{% else %}Panel de Control{% endif %}</h1>
+    <a href="{% url 'crear_ticket_staff' %}" class="btn btn-primary" style="margin-right: 3rem;">+ Nuevo Ticket</a>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card stat-total">
+        <div class="stat-number">{{ estadisticas.total }}</div>
+        <div class="stat-label">Total</div>
+    </div>
+    <div class="stat-card stat-abiertos">
+        <div class="stat-number">{{ estadisticas.abiertos }}</div>
+        <div class="stat-label">Abiertos</div>
+    </div>
+    <div class="stat-card stat-proceso">
+        <div class="stat-number">{{ estadisticas.en_proceso }}</div>
+        <div class="stat-label">En Proceso</div>
+    </div>
+    <div class="stat-card stat-pendientes">
+        <div class="stat-number">{{ estadisticas.pendientes }}</div>
+        <div class="stat-label">Pendientes</div>
+    </div>
+    <div class="stat-card stat-resueltos">
+        <div class="stat-number">{{ estadisticas.resueltos }}</div>
+        <div class="stat-label">Resueltos</div>
+    </div>
+</div>
+
+<div class="filters-card">
+    <form method="get" class="filters-form">
+        <div class="form-group-inline">
+            <div class="form-group">
+                <label>Buscar</label>
+                <input type="text" name="buscar" value="{{ request.GET.buscar }}" class="form-control" placeholder="Nombre, descripcion, area...">
+            </div>
+            <div class="form-group">
+                <label>Estado</label>
+                <select name="estado" class="form-select">
+                    <option value="">Todos</option>
+                    <option value="abierto" {% if request.GET.estado == 'abierto' %}selected{% endif %}>Abierto</option>
+                    <option value="en_proceso" {% if request.GET.estado == 'en_proceso' %}selected{% endif %}>En proceso</option>
+                    <option value="pendiente" {% if request.GET.estado == 'pendiente' %}selected{% endif %}>Pendiente</option>
+                    <option value="resuelto" {% if request.GET.estado == 'resuelto' %}selected{% endif %}>Resuelto</option>
+                    <option value="_sin_asignar" {% if request.GET.estado == '_sin_asignar' %}selected{% endif %}>Sin asignar</option>
+                </select>
+            </div>
+            {% if tecnicos %}
+            <div class="form-group">
+                <label>Técnico</label>
+                <select name="tecnico" class="form-select">
+                    <option value="">Todos</option>
+                    {% for tecnico in tecnicos %}
+                        <option value="{{ tecnico.id }}" {% if request.GET.tecnico == tecnico.id|stringformat:"s" %}selected{% endif %}>{{ tecnico.get_full_name|default:tecnico.username }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endif %}
+            <div class="form-group">
+                <label>Desde</label>
+                <input type="date" name="fecha_desde" value="{{ request.GET.fecha_desde }}" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Hasta</label>
+                <input type="date" name="fecha_hasta" value="{{ request.GET.fecha_hasta }}" class="form-control">
+            </div>
+            <div class="form-group form-group-actions">
+                <button type="submit" class="btn btn-primary">Filtrar</button>
+                <a href="{% url 'dashboard' %}" class="btn btn-secondary">Limpiar</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+        <h2>{% if es_tecnico %}Mis Tickets Asignados{% else %}Lista de Tickets{% endif %}</h2>
+        {% if es_admin %}
+        <div style="display: flex; gap: 0.3rem; align-items: center;">
+            <a href="{% url 'tickets_pdf' %}?{{ request.GET.urlencode }}" class="btn btn-sm btn-secondary" target="_blank">📄 PDF</a>
+            <a href="{% url 'tickets_excel' %}?{{ request.GET.urlencode }}" class="btn btn-sm btn-secondary">📊 Excel</a>
+        </div>
+        {% endif %}
+    </div>
+    {% if tickets %}
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Solicitante</th>
+                    <th>Tipo</th>
+                    <th>Dirección</th>
+                    <th>Técnico</th>
+                    <th>Estado</th>
+                    <th>Fecha</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ticket in tickets %}
+                <tr>
+                    <td><strong>{{ ticket.codigo }}</strong></td>
+                    <td>{{ ticket.solicitante }}</td>
+                    <td>{{ ticket.nombres_tipificacion }}</td>
+                    <td>{{ ticket.direccion_area }}</td>
+                    <td>{{ ticket.nombre_tecnico }}</td>
+                    <td>
+                        <span class="badge badge-{{ ticket.estado }}">
+                            {{ ticket.get_estado_display }}
+                        </span>
+                    </td>
+                    <td>{{ ticket.fecha_creacion|date:"d/m/Y H:i" }}</td>
+                    <td style="white-space: nowrap;">
+                        <a href="{% url 'detalle_ticket' ticket.pk %}" class="btn btn-sm btn-primary">Ver</a>
+                        <a href="{% url 'ticket_pdf' ticket.pk %}" class="btn btn-sm btn-secondary" target="_blank">PDF</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if tickets.paginator.num_pages > 1 %}
+    <div class="pagination">
+        <span class="step-links">
+            {% if tickets.has_previous %}
+                <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page=1" class="btn btn-sm btn-secondary" title="Primera">&laquo;</a>
+                <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ tickets.previous_page_number }}" class="btn btn-sm btn-secondary" title="Anterior">&lsaquo;</a>
+            {% endif %}
+            <span class="current">
+                {{ tickets.number }} / {{ tickets.paginator.num_pages }}
+            </span>
+            {% if tickets.has_next %}
+                <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ tickets.next_page_number }}" class="btn btn-sm btn-secondary" title="Siguiente">&rsaquo;</a>
+                <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ tickets.paginator.num_pages }}" class="btn btn-sm btn-secondary" title="Última">&raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+    {% endif %}
+    {% else %}
+    <div class="empty-state">
+        <p>{% if es_tecnico %}No tiene tickets asignados.{% else %}No se encontraron tickets.{% endif %}</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

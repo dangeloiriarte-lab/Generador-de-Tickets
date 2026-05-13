@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Guía Rápida - Soporte Técnico{% endblock %}
+
+{% block extra_css %}
+<style>
+.guide-container { max-width: 900px; margin: 0 auto; }
+.guide-container h2 { color: #021373; margin: 2rem 0 1rem; padding-left: 10px; border-left: 4px solid #D92938; }
+.guide-container h3 { color: #0511F2; margin: 1.5rem 0 0.5rem; }
+.guide-container p, .guide-container li { line-height: 1.7; }
+.guide-container ul, .guide-container ol { margin: 0.5rem 0 1rem 1.5rem; }
+.guide-container table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+.guide-container th, .guide-container td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+.guide-container th { background: #021373; color: #fff; }
+.guide-container tr:nth-child(even) { background: #f5f5f5; }
+.role-badge { display: inline-block; padding: 3px 10px; border-radius: 4px; color: #fff; font-weight: bold; font-size: 13px; }
+.role-admin { background: #D92938; }
+.role-tecnico { background: #0597F2; }
+.role-usuario { background: #168C40; }
+.flow-step { background: #e8f5e9; border-left: 4px solid #168C40; padding: 12px; margin: 10px 0; border-radius: 4px; }
+.tip { background: #fff3cd; border-left: 4px solid #ffc107; padding: 12px; margin: 10px 0; border-radius: 4px; }
+.visual-ref { background: #e3f2fd; border-left: 4px solid #0597F2; padding: 12px; margin: 10px 0; border-radius: 4px; font-size: 0.95rem; }
+[data-theme="dark"] .guide-container h2 { color: #90caf9; }
+[data-theme="dark"] .guide-container h3 { color: #64b5f6; }
+[data-theme="dark"] .guide-container th, [data-theme="dark"] .guide-container td { border-color: #334155; }
+[data-theme="dark"] .guide-container th { background: #1a237e; }
+[data-theme="dark"] .guide-container tr:nth-child(even) { background: #1e293b; }
+[data-theme="dark"] .flow-step { background: rgba(22,140,64,0.15); border-left-color: #2ecc71; }
+[data-theme="dark"] .tip { background: rgba(255,193,7,0.15); border-left-color: #ffc107; }
+[data-theme="dark"] .visual-ref { background: rgba(5,151,242,0.15); border-left-color: #0597F2; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="guide-container">
+    <div class="page-header">
+        <h1>Guía Rápida</h1>
+        <a href="javascript:history.back()" class="btn btn-secondary">&larr; Volver</a>
+    </div>
+
+    <h2>Los 3 tipos de usuarios</h2>
+    <table>
+        <tr><th>Tipo</th><th>¿Cómo entra?</th><th>¿Qué puede hacer?</th></tr>
+        <tr>
+            <td><span class="role-badge role-usuario">Usuario</span></td>
+            <td>Solo con su nombre y área (sin contraseña)</td>
+            <td>Reportar fallas y ver el estado de sus reportes</td>
+        </tr>
+        <tr>
+            <td><span class="role-badge role-tecnico">Técnico</span></td>
+            <td>Con usuario y contraseña</td>
+            <td>Atender los reportes que le asignan, cambiar su estado y ver sus estadísticas</td>
+        </tr>
+        <tr>
+            <td><span class="role-badge role-admin">Administrador</span></td>
+            <td>Con usuario y contraseña</td>
+            <td>Todo: asignar reportes, crear usuarios, ver estadísticas generales, exportar datos</td>
+        </tr>
+    </table>
+
+    <h2>Cómo entrar al sistema</h2>
+
+    <div class="flow-step">
+        <strong>1.</strong> En la página de inicio elija "Soy Usuario" (si no tiene cuenta) o "Soy Administrador" (si es personal)
+    </div>
+    <div class="flow-step">
+        <strong>2.</strong> Si es usuario: escriba su nombre y seleccione su área de la lista → entra directo
+    </div>
+    <div class="flow-step">
+        <strong>3.</strong> Si es personal: escriba su usuario y contraseña → entra al panel principal
+    </div>
+
+    <div class="visual-ref">
+        <strong>Cómo se ve:</strong> La página de inicio tiene dos botones grandes de colores. El botón verde "Soy Usuario" es para reportar fallas. El botón rojo "Soy Administrador" es para el personal. El menú de arriba cambia según quien entre: los usuarios ven su nombre y una campanita; el personal ve más opciones como Reportes, Usuarios y Bitácora.
+    </div>
+
+    <h2>Pasos del Usuario (para reportar una falla)</h2>
+    <div class="flow-step">
+        <strong>1.</strong> En la página de inicio haga clic en "Soy Usuario" → escriba su nombre y seleccione su área
+    </div>
+    <div class="flow-step">
+        <strong>2.</strong> En su panel personal haga clic en "+ Nuevo Ticket" → escriba su contacto y describa el problema
+    </div>
+    <div class="flow-step">
+        <strong>3.</strong> El sistema le dará un código como TKT-0001 para que pueda darle seguimiento
+    </div>
+    <div class="flow-step">
+        <strong>4.</strong> Desde su panel puede ver en qué estado está su reporte y quién lo está atendiendo
+    </div>
+
+    <h2>Pasos del Técnico (para atender reportes)</h2>
+    <div class="flow-step">
+        <strong>1.</strong> Entre con su usuario y contraseña
+    </div>
+    <div class="flow-step">
+        <strong>2.</strong> En su panel principal ve SOLO los reportes que le asignaron. Puede buscar por texto, estado o fecha
+    </div>
+    <div class="flow-step">
+        <strong>3.</strong> Haga clic en "Ver" para abrir un reporte → puede cambiar el estado, el tipo de falla y escribir notas
+    </div>
+    <div class="flow-step">
+        <strong>4.</strong> En Reportes puede ver sus estadísticas con gráficos de colores
+    </div>
+    <div class="flow-step">
+        <strong>5.</strong> Puede crear reportes en nombre de los usuarios desde "+ Nuevo Ticket"
+    </div>
+
+    <div class="visual-ref">
+        <strong>Cómo se ve el panel principal:</strong> Arriba hay 5 tarjetas con números: Total, Abiertos (verde), En Proceso (naranja), Pendientes (rojo) y Resueltos (azul). Debajo hay una tabla con los reportes y sus datos. Arriba de la tabla están los buscadores para filtrar. En la parte superior hay botones como "+ Nuevo Ticket".
+    </div>
+
+    <div class="tip">
+        <strong>Importante:</strong> Los técnicos NO pueden cambiar quién atiende el reporte ni crear usuarios. Solo los administradores tienen esos permisos. Tampoco ven los reportes de otros técnicos.
+    </div>
+
+    <h2>Pasos del Administrador</h2>
+    <div class="flow-step">
+        <strong>1.</strong> Entre con su usuario y contraseña
+    </div>
+    <div class="flow-step">
+        <strong>2.</strong> En su panel principal ve TODOS los reportes del sistema. Puede buscar por texto, estado, técnico o fecha
+    </div>
+    <div class="flow-step">
+        <strong>3.</strong> "Ver" un reporte → puede cambiar todo: estado, tipo de falla, técnico, notas. Puede marcarse como "Lo atenderé yo"
+    </div>
+    <div class="flow-step">
+        <strong>4.</strong> Reportes → estadísticas GENERALES con gráficos de colores
+    </div>
+    <div class="flow-step">
+        <strong>5.</strong> Usuarios → puede crear, editar y eliminar técnicos y administradores
+    </div>
+    <div class="flow-step">
+        <strong>6.</strong> Bitácora → registro de todo lo que se hace en el sistema
+    </div>
+    <div class="flow-step">
+        <strong>7.</strong> Exportar → puede descargar los reportes en PDF (uno solo o varios) y en Excel
+    </div>
+
+    <div class="visual-ref">
+        <strong>Cómo se ven los Reportes:</strong> Hay 5 gráficos circulares y de barras con colores. Muestran: reportes por estado, por tipo de falla, por área, por técnico y por período de tiempo (trimestre, semestre, año). Haga clic en cualquier parte del gráfico para ir al panel principal ya filtrado por esa opción.
+    </div>
+
+    <div class="visual-ref">
+        <strong>Cómo se ven los filtros activos:</strong> Al hacer clic en un gráfico, los filtros elegidos aparecen como etiquetas debajo del título. Cada etiqueta tiene el nombre del filtro y una "✕" para quitarlo. Puede poner varios filtros juntos (ej: estado + tipo de falla + técnico) y quitarlos de uno en uno o todos juntos con el botón "Limpiar filtros". Debajo de los filtros hay un resumen con los números y porcentajes de cada categoría.
+    </div>
+
+    <div class="visual-ref">
+        <strong>Cómo se ve el detalle de un reporte:</strong> La pantalla se divide en dos partes. A la izquierda está la información del reporte (código, quien lo hizo, área, estado, técnico). A la derecha hay un recuadro con el análisis del problema y el formulario para actualizar (cambiar estado, marcar tipo de falla, escribir notas). Al final está el botón "Guardar Cambios".
+    </div>
+
+    <h2>Estados de los Reportes</h2>
+    <table>
+        <tr><th>Estado</th><th>Color</th><th>¿Qué significa?</th></tr>
+        <tr><td>Abierto</td><td><span style="background:#166534; color:#fff; padding:2px 8px; border-radius:4px; font-size:12px;">Verde</span></td><td>Acaba de llegar, nadie lo ha atendido aún</td></tr>
+        <tr><td>En Proceso</td><td><span style="background:#92400e; color:#fff; padding:2px 8px; border-radius:4px; font-size:12px;">Naranja</span></td><td>Un técnico ya está trabajando en resolverlo</td></tr>
+        <tr><td>Pendiente</td><td><span style="background:#991b1b; color:#fff; padding:2px 8px; border-radius:4px; font-size:12px;">Rojo</span></td><td>Está esperando algo: más información, repuestos, etc.</td></tr>
+        <tr><td>Resuelto</td><td><span style="background:#1e40af; color:#fff; padding:2px 8px; border-radius:4px; font-size:12px;">Azul</span></td><td>El problema ya está solucionado</td></tr>
+    </table>
+
+    <div class="visual-ref">
+        <strong>Cómo se ve el menú de arriba:</strong> A la izquierda está el logo del sistema. Al centro están los enlaces: Panel Principal, Reportes (solo personal). A la derecha: una campanita 🔔 con el número de avisos nuevos, un engranaje ⚙️ para cambiar la configuración, el nombre de quien entró y el botón para salir. En celular se convierte en un menú de tres líneas ☰.
+    </div>
+
+    <div class="visual-ref">
+        <strong>Cómo se ve la Configuración ⚙️:</strong> Al hacer clic en el engranaje, se abre un panel por la derecha. Allí puede cambiar: el tema (claro, oscuro o automático), el tamaño de las letras (pequeño, mediano, grande), el sonido de los avisos (7 sonidos para elegir) y dónde aparecen los avisos flotantes (4 esquinas). Se cierra al hacer clic fuera del panel.
+    </div>
+
+    <div class="tip">
+        <strong>Consejo:</strong> Use los buscadores del panel principal para encontrar reportes rápido. En los gráficos, haga clic en cualquier parte para ver solo esos reportes en el panel. Mantenga los estados al día para que los gráficos muestren información correcta.
+    </div>
+
+    <p style="margin-top:2rem; text-align:center; color:#94a3b8; font-size:0.9rem; border-top:1px solid #e2e8f0; padding-top:1rem;">
+        Creado por: Ing. D'angelo Iriarte
+    </p>
+</div>
+{% endblock %}

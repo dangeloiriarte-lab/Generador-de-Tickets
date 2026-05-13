@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Ticket {{ ticket.codigo }} - Mi Panel{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Ticket {{ ticket.codigo }}</h1>
+    <a href="{% url 'panel_usuario' %}" class="btn btn-secondary">&larr; Volver a Mi Panel</a>
+</div>
+
+<div class="card" style="max-width: 700px;">
+    <h2>Detalle de su Solicitud</h2>
+    <table class="table-summary">
+        <tr>
+            <th>Estado actual:</th>
+            <td>
+                <span class="badge badge-{{ ticket.estado }}">
+                    {{ ticket.get_estado_display }}
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <th>Tipificación:</th>
+                <td>{{ ticket.nombres_tipificacion }}</td>
+        </tr>
+        <tr>
+            <th>Tecnico asignado:</th>
+            <td>{{ ticket.nombre_tecnico }}</td>
+        </tr>
+        <tr>
+            <th>Fecha de creacion:</th>
+            <td>{{ ticket.fecha_creacion|date:"d/m/Y H:i" }}</td>
+        </tr>
+        <tr>
+            <th>Ultima actualizacion:</th>
+            <td>{{ ticket.fecha_actualizacion|date:"d/m/Y H:i" }}</td>
+        </tr>
+    </table>
+
+    <div class="description-box">
+        <h3>Descripcion del problema</h3>
+        <p>{{ ticket.descripcion }}</p>
+    </div>
+
+    {% if ticket.notas %}
+    <div class="notas-box">
+        <h3>Respuesta del tecnico</h3>
+        <div class="nota-content">{{ ticket.notas|linebreaks }}</div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

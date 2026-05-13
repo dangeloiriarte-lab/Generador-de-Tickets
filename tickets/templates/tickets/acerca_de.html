@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Acerca de - Soporte Técnico{% endblock %}
+
+{% block extra_css %}
+<style>
+.about-container { max-width: 700px; margin: 0 auto; text-align: center; }
+.about-card { background: #fff; border-radius: 12px; padding: 3rem 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-top: 2rem; }
+.about-logo { width: 120px; height: auto; margin-bottom: 1.5rem; }
+.about-container h2 { color: #021373; font-size: 1.8rem; margin-bottom: 0.5rem; }
+.about-container .version { color: #D92938; font-weight: bold; font-size: 1.1rem; margin-bottom: 2rem; }
+.about-container .tech-list { list-style: none; padding: 0; margin: 2rem 0; }
+.about-container .tech-list li { display: inline-block; background: #f1f5f9; padding: 0.5rem 1rem; border-radius: 20px; margin: 0.3rem; font-size: 0.9rem; color: #475569; }
+.about-container .divider { border: none; border-top: 1px solid #e2e8f0; margin: 2rem 0; }
+.about-container .credit { color: #64748b; line-height: 1.8; }
+.about-container .credit strong { color: #021373; }
+[data-theme="dark"] .about-card { background: #1e293b; }
+[data-theme="dark"] .about-container h2 { color: #90caf9; }
+[data-theme="dark"] .about-container .version { color: #f87171; }
+[data-theme="dark"] .about-container .tech-list li { background: #334155; color: #cbd5e1; }
+[data-theme="dark"] .about-container .credit strong { color: #90caf9; }
+[data-theme="dark"] .about-container .divider { border-color: #334155; }
+[data-theme="dark"] .about-author { color: #ffffff !important; }
+[data-theme="dark"] .about-tech-label { color: #cbd5e1 !important; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="about-container">
+    <div style="text-align: left; margin-bottom: 0.5rem;">
+        <a href="javascript:history.back()" class="btn btn-secondary">&larr; Volver</a>
+    </div>
+    <div class="about-card">
+        <img src="{% static 'img/logo.png' %}" alt="Logo" class="about-logo">
+        <h2>Sistema de Tickets de Soporte Técnico</h2>
+        <p class="version">Versión 4.1</p>
+
+        <hr class="divider">
+
+        <div class="credit">
+            <p><strong>Creado por:</strong></p>
+            <p style="font-size: 1.2rem; color: #021373;" class="about-author">Ing. D'angelo Iriarte</p>
+            <p style="margin-top: 0.5rem;">Dirección de Tecnología</p>
+        </div>
+
+        <hr class="divider">
+
+        <p style="color: #475569; margin-bottom: 1rem;" class="about-tech-label"><strong>Tecnologías utilizadas</strong></p>
+        <ul class="tech-list">
+            <li>Python 3.14</li>
+            <li>Django 6.0</li>
+            <li>MariaDB</li>
+            <li>ReportLab</li>
+            <li>WeasyPrint</li>
+            <li>SVG (Gráficos servidor)</li>
+            <li>Cryptography</li>
+            <li>OpenPyXL</li>
+            <li>HTML5 + CSS3 + JavaScript</li>
+        </ul>
+
+        <hr class="divider">
+
+        <p style="color: #94a3b8; font-size: 0.9rem;">
+            &copy; 2026 - Todos los derechos reservados
+        </p>
+    </div>
+</div>
+{% endblock %}

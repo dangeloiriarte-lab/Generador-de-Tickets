@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}Mi Panel - {{ nombre }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>Mi Panel</h1>
+        <p class="text-muted">Bienvenido, <strong>{{ nombre }}</strong> - Area: <strong>{{ area }}</strong></p>
+    </div>
+    <div>
+        <a href="{% url 'crear_ticket' %}" class="btn btn-primary">+ Nuevo Ticket</a>
+        <a href="{% url 'cerrar_sesion_usuario' %}" class="btn btn-secondary">Cambiar Usuario</a>
+    </div>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card stat-total">
+        <div class="stat-number">{{ total }}</div>
+        <div class="stat-label">Total Tickets</div>
+    </div>
+    <div class="stat-card stat-abiertos">
+        <div class="stat-number">{{ abiertos }}</div>
+        <div class="stat-label">Abiertos</div>
+    </div>
+    <div class="stat-card stat-proceso">
+        <div class="stat-number">{{ en_proceso }}</div>
+        <div class="stat-label">En Proceso</div>
+    </div>
+    <div class="stat-card stat-pendientes">
+        <div class="stat-number">{{ pendientes }}</div>
+        <div class="stat-label">Pendientes</div>
+    </div>
+    <div class="stat-card stat-resueltos">
+        <div class="stat-number">{{ resueltos }}</div>
+        <div class="stat-label">Resueltos</div>
+    </div>
+</div>
+
+<div class="card">
+    <h2>Historial de Solicitudes</h2>
+    {% if mis_tickets %}
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Tipificación</th>
+                    <th>Estado</th>
+                    <th>Técnico</th>
+                    <th>Fecha</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ticket in mis_tickets %}
+                <tr>
+                    <td><strong>{{ ticket.codigo }}</strong></td>
+                    <td>{{ ticket.nombres_tipificacion }}</td>
+                    <td>
+                        <span class="badge badge-{{ ticket.estado }}">
+                            {{ ticket.get_estado_display }}
+                        </span>
+                    </td>
+                    <td>{{ ticket.nombre_tecnico }}</td>
+                    <td>{{ ticket.fecha_creacion|date:"d/m/Y H:i" }}</td>
+                    <td>
+                        <a href="{% url 'ver_ticket_usuario' ticket.pk %}" class="btn btn-sm btn-primary">Ver</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if mis_tickets.paginator.num_pages > 1 %}
+    <div class="pagination">
+        <span class="step-links">
+            {% if mis_tickets.has_previous %}
+                <a href="?page=1" class="btn btn-sm btn-secondary" title="Primera">&laquo;</a>
+                <a href="?page={{ mis_tickets.previous_page_number }}" class="btn btn-sm btn-secondary" title="Anterior">&lsaquo;</a>
+            {% endif %}
+            <span class="current">
+                {{ mis_tickets.number }} / {{ mis_tickets.paginator.num_pages }}
+            </span>
+            {% if mis_tickets.has_next %}
+                <a href="?page={{ mis_tickets.next_page_number }}" class="btn btn-sm btn-secondary" title="Siguiente">&rsaquo;</a>
+                <a href="?page={{ mis_tickets.paginator.num_pages }}" class="btn btn-sm btn-secondary" title="Última">&raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+    {% endif %}
+    {% else %}
+    <div class="empty-state">
+        <p>No tiene tickets registrados.</p>
+        <a href="{% url 'crear_ticket' %}" class="btn btn-primary mt-4">Crear mi primer ticket</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

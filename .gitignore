@@ -1,0 +1,32 @@
+# Entorno virtual
+.venv/
+
+# Cache de Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Base de datos
+db.sqlite3
+
+# Configuración sensible
+.env
+
+# Archivos de autoría (generados por setup_ownership)
+tickets/ownership.enc
+tickets/manifest.enc
+tickets/.ownership_data.json
+
+# Cache de PDFs
+pdf_cache/
+
+# Archivos estáticos compilados
+staticfiles/
+
+# IDE
+.vscode/
+.idea/
+
+# Sistema
+.DS_Store
+Thumbs.db

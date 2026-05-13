@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Bloqueado</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        .compromised-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: #0f172a;
+            padding: 2rem;
+        }
+        .compromised-card {
+            max-width: 520px;
+            text-align: center;
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 3rem 2rem;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            border: 1px solid #334155;
+        }
+        .compromised-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        .compromised-card h1 {
+            color: #ef4444;
+            font-size: 1.75rem;
+            margin-bottom: 1rem;
+        }
+        .compromised-card p {
+            color: #94a3b8;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 0.75rem;
+        }
+        .compromised-card .code-block {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1.5rem 0;
+            text-align: left;
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: #e2e8f0;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .compromised-card .btn {
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="compromised-container">
+        <div class="compromised-card">
+            <div class="compromised-icon">🚫</div>
+            <h1>SISTEMA BLOQUEADO</h1>
+            <p>Se ha detectado una violación en la integridad del sistema.</p>
+            <p>Los archivos del proyecto han sido modificados, movidos o eliminados sin la autorización correspondiente.</p>
+            {% if mensaje %}
+            <div class="code-block">{{ mensaje }}</div>
+            {% endif %}
+            <p style="font-size:0.85rem;color:#64748b;">Para restaurar el acceso, contacta al administrador del sistema o ejecuta el comando de verificación de autoría.</p>
+            <a href="{% url 'landing' %}" class="btn btn-primary">Volver al inicio</a>
+        </div>
+    </div>
+</body>
+</html>

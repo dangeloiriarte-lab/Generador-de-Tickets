@@ -1,0 +1,762 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manual de Usuario - Soporte Técnico{% endblock %}
+
+{% block extra_css %}
+<style>
+.manual-container { max-width: 900px; margin: 0 auto; }
+.manual-card { background: #fff; border-radius: 12px; padding: 2.5rem 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-top: 1.5rem; }
+.manual-container h1 { color: #021373; border-bottom: 3px solid #D92938; padding-bottom: 10px; margin-bottom: 30px; font-size: 28px; }
+.manual-container h2 { color: #021373; margin: 30px 0 15px; font-size: 22px; padding-left: 10px; border-left: 4px solid #D92938; }
+.manual-container h3 { color: #0511F2; margin: 20px 0 10px; font-size: 18px; }
+.manual-container h4 { color: #021373; margin: 15px 0 8px; font-size: 15px; }
+.manual-container p { margin-bottom: 10px; color: #333; }
+.manual-container ul, .manual-container ol { margin: 10px 0 15px 25px; }
+.manual-container li { margin-bottom: 5px; color: #333; }
+.manual-container table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+.manual-container th, .manual-container td { border: 1px solid #ddd; padding: 10px; text-align: left; color: #333; }
+.manual-container th { background: #021373; color: #fff; }
+.manual-container tr:nth-child(even) { background: #f5f5f5; }
+.manual-container .note { background: #fff3cd; border-left: 4px solid #ffc107; padding: 12px; margin: 15px 0; border-radius: 4px; color: #333; }
+.manual-container .warning { background: #f8d7da; border-left: 4px solid #D92938; padding: 12px; margin: 15px 0; border-radius: 4px; color: #333; }
+.manual-container .info { background: #d1ecf1; border-left: 4px solid #0597F2; padding: 12px; margin: 15px 0; border-radius: 4px; color: #333; }
+.manual-container .step { background: #e8f5e9; border-left: 4px solid #168C40; padding: 12px; margin: 15px 0; border-radius: 4px; color: #333; }
+.manual-container .visual-box { background: #f0f4ff; border: 2px dashed #3b82f6; padding: 15px; margin: 15px 0; border-radius: 8px; color: #1e3a5f; }
+.manual-container .portada { text-align: center; padding: 40px 0; }
+.manual-container .portada h1 { font-size: 32px; border: none; margin-bottom: 10px; }
+.manual-container .portada .subtitle { font-size: 20px; color: #666; margin: 20px 0; }
+.manual-container .portada .logo-img { width: 200px; height: auto; margin-bottom: 20px; }
+.manual-container .toc { margin: 30px 0; }
+.manual-container .toc a { color: #3b82f6; text-decoration: none; display: block; padding: 6px 0; border-bottom: 1px solid #eee; }
+.manual-container .toc a:hover { text-decoration: underline; }
+.manual-container .role-badge { display: inline-block; padding: 4px 12px; border-radius: 4px; color: #fff; font-weight: bold; font-size: 14px; margin-right: 5px; }
+.manual-container .role-admin { background: #D92938; }
+.manual-container .role-tecnico { background: #0597F2; }
+.manual-container .role-usuario { background: #168C40; }
+.manual-container .estado-badge { display: inline-block; padding: 3px 10px; border-radius: 4px; color: #fff; font-size: 12px; font-weight: bold; }
+.manual-container .manual-footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 13px; color: #888; text-align: center; }
+.manual-container .layout-desc { display: flex; gap: 20px; margin: 15px 0; flex-wrap: wrap; }
+.manual-container .layout-col { flex: 1; min-width: 200px; padding: 12px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; }
+.manual-container .layout-col h4 { margin-top: 0; color: #021373; }
+[data-theme="dark"] .manual-card { background: #1e293b; }
+[data-theme="dark"] .manual-container h1 { color: #90caf9; }
+[data-theme="dark"] .manual-container h2 { color: #90caf9; }
+[data-theme="dark"] .manual-container h3 { color: #64b5f6; }
+[data-theme="dark"] .manual-container h4 { color: #90caf9; }
+[data-theme="dark"] .manual-container p, [data-theme="dark"] .manual-container li { color: #cbd5e1; }
+[data-theme="dark"] .manual-container th, [data-theme="dark"] .manual-container td { border-color: #334155; color: #cbd5e1; }
+[data-theme="dark"] .manual-container th { background: #1a237e; }
+[data-theme="dark"] .manual-container tr:nth-child(even) { background: #0f172a; }
+[data-theme="dark"] .manual-container .step { background: rgba(22,140,64,0.15); border-left-color: #2ecc71; }
+[data-theme="dark"] .manual-container .note { background: rgba(255,193,7,0.15); border-left-color: #ffc107; }
+[data-theme="dark"] .manual-container .warning { background: rgba(217,41,56,0.15); border-left-color: #D92938; }
+[data-theme="dark"] .manual-container .info { background: rgba(5,151,242,0.15); border-left-color: #0597F2; }
+[data-theme="dark"] .manual-container .visual-box { background: rgba(59,130,246,0.1); border-color: #3b82f6; color: #93c5fd; }
+[data-theme="dark"] .manual-container .layout-col { background: #1e293b; border-color: #334155; }
+[data-theme="dark"] .manual-container .step { color: #bbf7d0; }
+[data-theme="dark"] .manual-container .note { color: #fef3c7; }
+[data-theme="dark"] .manual-container .warning { color: #fecaca; }
+[data-theme="dark"] .manual-container .info { color: #bae6fd; }
+[data-theme="dark"] .manual-container .manual-footer { color: #64748b; }
+[data-theme="dark"] .manual-container .portada .subtitle { color: #94a3b8; }
+[data-theme="dark"] .demo-tag { background: #334155 !important; color: #e2e8f0 !important; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="manual-container">
+    <div style="text-align: left; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+        <a href="javascript:history.back()" class="btn btn-secondary">&larr; Volver</a>
+        {% if es_admin %}
+        <a href="{% url 'manual_pdf' %}" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 6px;">&darr; Descargar PDF</a>
+        {% endif %}
+    </div>
+    <div class="manual-card">
+
+    <div class="portada">
+        <img src="{% static 'img/logo.png' %}" alt="Logo" class="logo-img">
+        <h1>Sistema de Tickets de Soporte Técnico</h1>
+        <p class="subtitle">Manual de Usuario</p>
+        <p style="color: var(--text-light, #888);">Roles: <span class="role-badge role-usuario">Usuario</span> <span class="role-badge role-tecnico">Técnico</span> <span class="role-badge role-admin">Administrador</span></p>
+        <p style="margin-top:30px; color: var(--text-light, #aaa);">Versión 4.1</p>
+    </div>
+
+    <h2>Índice</h2>
+    <div class="toc">
+        <a href="#acceso">1. Cómo entrar al sistema</a>
+        <a href="#inicio">2. La página de inicio</a>
+        <a href="#menu">3. El menú superior</a>
+        <a href="#usuario">4. Cómo usar el sistema siendo Usuario</a>
+        <a href="#tecnico">5. Cómo usar el sistema siendo Técnico</a>
+        <a href="#admin">6. Cómo usar el sistema siendo Administrador</a>
+        <a href="#reportes">7. Reportes y gráficos</a>
+        <a href="#notificaciones">8. Notificaciones y avisos</a>
+        <a href="#config">9. Configuración personal</a>
+        <a href="#estados">10. Estados de los reportes</a>
+        <a href="#exportar">11. Exportar datos</a>
+    </div>
+
+    <!-- ============================================================ -->
+    <h2 id="acceso">1. Cómo entrar al sistema</h2>
+
+    <h3>1.1 Primeros pasos</h3>
+    <p>Abra su navegador (Chrome, Firefox, Edge) y escriba la dirección del sistema. Aparecerá la página de inicio con el logo y dos botones grandes para elegir quién es usted.</p>
+
+    <div class="visual-box">
+        <strong>🖥️ Así se ve la página de inicio:</strong><br><br>
+        <strong>Al centro de la pantalla:</strong>
+        <ul>
+            <li>Logo del sistema arriba</li>
+            <li>Nombre del sistema</li>
+            <li>Dos botones grandes de colores con bordes redondeados:
+                <ul>
+                    <li><strong>"Soy Usuario"</strong> — botón verde. Úselo si necesita reportar una falla y no tiene cuenta.</li>
+                    <li><strong>"Soy Administrador"</strong> — botón rojo. Úselo si es técnico o administrador y tiene usuario y contraseña.</li>
+                </ul>
+            </li>
+            <li>Enlaces abajo: Manual de Usuario, Guía Rápida, Acerca de</li>
+        </ul>
+        <strong>¿Qué pasa cuando pasa el mouse?</strong> Al pasar el mouse sobre cada botón, el color se vuelve más intenso. Al hacer clic, lo lleva a la siguiente pantalla según la opción que eligió.
+    </div>
+
+    <h3>1.2 Entrar como Usuario (sin cuenta)</h3>
+    <div class="step">
+        <strong>Paso a paso:</strong>
+        <ol>
+            <li>En la página de inicio, haga clic en el botón verde <strong>"Soy Usuario"</strong></li>
+            <li>Aparece un formulario con:
+                <ul>
+                    <li><strong>Nombre completo:</strong> espacio para escribir su nombre</li>
+                    <li><strong>Dirección/Departamento:</strong> lista para elegir su área de trabajo</li>
+                </ul>
+            </li>
+            <li>Haga clic en <strong>"Entrar"</strong> y ya está dentro</li>
+        </ol>
+    </div>
+
+    <div class="visual-box">
+        <strong>🖥️ Así se ve el formulario para identificarse:</strong><br><br>
+        Un recuadro centrado con:
+        <ul>
+            <li>"Nombre completo" con una casilla para escribir debajo</li>
+            <li>"Dirección/Departamento" con una lista para elegir debajo</li>
+            <li>Botón "Entrar" al fondo</li>
+            <li>Enlace "← Volver" para regresar a la página de inicio</li>
+        </ul>
+        <strong>Qué hacer:</strong> Escriba su nombre, elija su área de la lista y haga clic en "Entrar". El sistema lo llevará a su panel personal.
+    </div>
+
+    <h3>1.3 Entrar como Técnico o Administrador</h3>
+    <div class="step">
+        <strong>Paso a paso:</strong>
+        <ol>
+            <li>En la página de inicio, haga clic en el botón rojo <strong>"Soy Administrador"</strong></li>
+            <li>Aparece la pantalla de inicio de sesión con:
+                <ul>
+                    <li><strong>Usuario:</strong> espacio para escribir su nombre de usuario</li>
+                    <li><strong>Contraseña:</strong> espacio para escribir su contraseña (se ven puntos por seguridad)</li>
+                </ul>
+            </li>
+            <li>Haga clic en <strong>"Iniciar Sesión"</strong></li>
+            <li>Si los datos son correctos, entrará al panel principal. Si no, verá un mensaje en rojo</li>
+        </ol>
+    </div>
+
+    <div class="visual-box">
+        <strong>🖥️ Así se ve la pantalla de inicio de sesión:</strong><br><br>
+        Recuadro centrado con:
+        <ul>
+            <li>Logo pequeño del sistema arriba</li>
+            <li>Título "Iniciar Sesión"</li>
+            <li>Campo "Usuario" con un icono de persona 👤</li>
+            <li>Campo "Contraseña" con un icono de candado 🔒</li>
+            <li>Botón "Iniciar Sesión"</li>
+            <li>Enlace "← Volver"</li>
+        </ul>
+        <strong>Qué pasa si me equivoco:</strong> Si la contraseña es incorrecta, aparece un mensaje en rojo. Si se equivoca muchas veces seguidas, el sistema le pedirá que espere un minuto antes de volver a intentar.
+    </div>
+
+    <!-- ============================================================ -->
+    <h2 id="inicio">2. La página de inicio</h2>
+
+    <p>La página de inicio (también llamada "landing") es la primera pantalla que ve al abrir el sistema. Desde aquí puede ir a todas las funciones según quien sea.</p>
+
+    <div class="visual-box">
+        <strong>🖥️ Vista completa de la página de inicio:</strong><br><br>
+        <strong>Arriba:</strong>
+        <ul>
+            <li>Logo del sistema a la izquierda</li>
+            <li>Menú con enlaces: "Manual", "Guía Rápida", "Acerca de"</li>
+        </ul>
+        <strong>Centro:</strong>
+        <ul>
+            <li>Logo grande del sistema</li>
+            <li>Nombre del sistema</li>
+            <li>Los dos botones de acceso principales</li>
+        </ul>
+        <strong>Abajo:</strong>
+        <ul>
+            <li>Nombre del sistema y año</li>
+        </ul>
+    </div>
+
+    <!-- ============================================================ -->
+    <h2 id="menu">3. El menú superior</h2>
+
+    <p>La barra de arriba (menú superior) cambia su apariencia según el tipo de usuario que haya entrado.</p>
+
+    <h3>3.1 Menú para Usuario (público)</h3>
+    <div class="visual-box">
+        <strong>🖥️ Así se ve el menú para un Usuario:</strong><br><br>
+        <ul>
+            <li><strong>Izquierda:</strong> Logo del sistema (al hacer clic va a su panel)</li>
+            <li><strong>Derecha:</strong>
+                <ul>
+                    <li>🔔 Campanita con número rojo si tiene avisos sin leer</li>
+                    <li>⚙️ Engranaje para abrir la configuración</li>
+                    <li>👤 Su nombre</li>
+                    <li>"Salir" — botón para cerrar su sesión</li>
+                </ul>
+            </li>
+        </ul>
+        En celular, los elementos se agrupan en un menú de tres líneas ☰.
+    </div>
+
+    <h3>3.2 Menú para Personal (Técnico y Administrador)</h3>
+    <div class="visual-box">
+        <strong>🖥️ Así se ve el menú para el Personal:</strong><br><br>
+        <ul>
+            <li><strong>Izquierda:</strong> Logo del sistema (al hacer clic va al panel principal)</li>
+            <li><strong>Centro:</strong> Enlaces:
+                <ul>
+                    <li><strong>Panel Principal</strong> — la pantalla principal de trabajo</li>
+                    <li><strong>Reportes</strong> — estadísticas y gráficos</li>
+                    <li><strong>Usuarios</strong> — (solo administradores) para crear y gestionar usuarios</li>
+                    <li><strong>Bitácora</strong> — (solo administradores) registro de actividades</li>
+                </ul>
+            </li>
+            <li><strong>Derecha:</strong>
+                <ul>
+                    <li>🔔 Campanita con número rojo de avisos</li>
+                    <li>⚙️ Engranaje para configuración</li>
+                    <li>👤 Su nombre</li>
+                    <li>"Cerrar Sesión" — botón para salir</li>
+                </ul>
+            </li>
+        </ul>
+        En celular, todo se agrupa en un menú de tres líneas ☰. La barra se queda fija aunque baje la página.
+    </div>
+
+    <!-- ============================================================ -->
+    <h2 id="usuario">4. Cómo usar el sistema siendo Usuario</h2>
+
+    <p>Esta parte explica todo lo que puede hacer un usuario que reporta fallas sin tener cuenta ni contraseña.</p>
+
+    <h3>4.1 Su panel personal</h3>
+    <p>Al identificarse con su nombre y área, entra a su propio panel.</p>
+
+    <div class="visual-box">
+        <strong>🖥️ Así se ve su panel personal:</strong><br><br>
+        <strong>Arriba:</strong>
+        <ul>
+            <li>Título: "Panel de Usuario — [su nombre]"</li>
+            <li>Su dirección/área</li>
+            <li>Botón azul <strong>"+ Nuevo Ticket"</strong> arriba a la derecha</li>
+        </ul>
+        <strong>Tarjetas de resumen (5 tarjetas en fila):</strong>
+        <ul>
+            <li>🟢 <strong>Total</strong> — todos sus reportes</li>
+            <li>🟢 <strong>Abiertos</strong> — los que acaba de crear</li>
+            <li>🟠 <strong>En Proceso</strong> — los que están siendo atendidos</li>
+            <li>🔴 <strong>Pendientes</strong> — los que están esperando algo</li>
+            <li>🔵 <strong>Resueltos</strong> — los que ya solucionaron</li>
+        </ul>
+        <strong>Lista de sus reportes:</strong>
+        <ul>
+            <li>Una tabla con: Código (TKT-XXXX), Descripción, Estado (con etiqueta de color), Técnico, Fecha</li>
+            <li>Al final de cada fila hay un botón "Ver" para ver los detalles</li>
+            <li>Los más recientes aparecen primero</li>
+            <li>Si tiene muchos, puede pasar las páginas</li>
+        </ul>
+        <strong>Qué hacer aquí:</strong> Haga clic en "+ Nuevo Ticket" para reportar una falla. Haga clic en "Ver" para ver los detalles de un reporte.
+    </div>
+
+    <h3>4.2 Cómo reportar una falla (crear un ticket)</h3>
+    <div class="step">
+        <strong>Paso a paso:</strong>
+        <ol>
+            <li>Desde su panel, haga clic en el botón azul <strong>"+ Nuevo Ticket"</strong></li>
+            <li>Aparece un formulario con:
+                <ul>
+                    <li><strong>Nombre completo:</strong> ya aparece con su nombre (no lo puede cambiar aquí)</li>
+                    <li><strong>Dirección/Área:</strong> ya aparece su área (tampoco se puede cambiar)</li>
+                    <li><strong>Email o Teléfono de contacto:</strong> escriba un correo o un número de teléfono</li>
+                    <li><strong>Descripción del problema:</strong> escriba con detalle qué falla tiene</li>
+                </ul>
+            </li>
+            <li>Haga clic en <strong>"Generar Ticket"</strong></li>
+        </ol>
+    </div>
+
+    <div class="visual-box">
+        <strong>🖥️ Así se ve el formulario para crear un reporte:</strong><br><br>
+        Recuadro blanco con:
+        <ul>
+            <li>Título "Nuevo Ticket"</li>
+            <li>Nombre: aparece su nombre en gris (no se puede editar)</li>
+            <li>Dirección: aparece su área en gris (no se puede editar)</li>
+            <li>Contacto: casilla vacía con un texto de ejemplo "correo@ejemplo.com o 0412-..."</li>
+            <li>Descripción: área grande para escribir con un texto de ejemplo "Describa su problema detalladamente..."</li>
+            <li>Botón "Generar Ticket" al fondo</li>
+            <li>Enlace "← Volver"</li>
+        </ul>
+        <strong>Qué hacer:</strong> Llene los datos. El botón "Generar Ticket" solo funciona cuando todo está completo.
+    </div>
+
+    <div class="info">
+        <h4>¿Qué pasa después de crear el reporte?</h4>
+        <ul>
+            <li>El sistema guarda su reporte como <strong>"Abierto"</strong></li>
+            <li>Analiza automáticamente la descripción para saber de qué tipo es la falla</li>
+            <li>Si identifica el tipo (Hardware, Software o Red), asigna un técnico disponible</li>
+            <li>Si no logra identificar la falla, queda como "Solicitud de servicio" sin técnico asignado</li>
+            <li>Aparece una pantalla de confirmación con el código de su reporte</li>
+        </ul>
+    </div>
+
+    <h3>4.3 Confirmación de reporte creado</h3>
+    <div class="visual-box">
+        <strong>🖥️ Así se ve cuando el reporte se creó con éxito:</strong><br><br>
+        Recuadro verde con:
+        <ul>
+            <li>Un visto ✅ grande</li>
+            <li>"Ticket creado exitosamente"</li>
+            <li>Su código en grande y negrita: <strong>TKT-XXXX</strong></li>
+            <li>Resumen con: su nombre, área, descripción, estado, técnico asignado</li>
+            <li>Botón "Volver a mi panel"</li>
+        </ul>
+    </div>
+
+    <h3>4.4 Ver los detalles de un reporte</h3>
+    <div class="step">
+        <ol>
+            <li>En su panel, busque el reporte en la lista</li>
+            <li>Haga clic en el botón <strong>"Ver"</strong> de esa fila</li>
+        </ol>
+    </div>
+
+    <div class="visual-box">
+        <strong>🖥️ Así se ven los detalles de un reporte:</strong><br><br>
+        <ul>
+            <li><strong>Código:</strong> TKT-XXXX (en grande)</li>
+            <li><strong>Solicitante:</strong> su nombre</li>
+            <li><strong>Contacto:</strong> el correo o teléfono que puso</li>
+            <li><strong>Dirección/Área:</strong> su departamento</li>
+            <li><strong>Estado:</strong> etiqueta de color (verde, naranja, rojo o azul)</li>
+            <li><strong>Técnico asignado:</strong> el nombre de quien lo atiende o "Sin asignar"</li>
+            <li><strong>Fecha de creación:</strong> día y hora</li>
+            <li><strong>Última actualización:</strong> día y hora</li>
+            <li><strong>Descripción del problema:</strong> el texto completo que escribió</li>
+            <li><strong>Notas de seguimiento:</strong> comentarios que el técnico haya agregado</li>
+        </ul>
+        Botón "← Volver a mi panel"
+    </div>
+
+    <h3>4.5 Estados de un reporte</h3>
+    <p>En la lista y en los detalles puede ver el estado actual de su reporte mediante una etiqueta de color:</p>
+    <ul>
+        <li><span class="estado-badge" style="background:#166534;">Abierto</span> — su reporte llegó y está esperando ser atendido</li>
+        <li><span class="estado-badge" style="background:#92400e;">En Proceso</span> — un técnico ya está trabajando en su problema</li>
+        <li><span class="estado-badge" style="background:#991b1b;">Pendiente</span> — el técnico necesita más datos o está esperando algo</li>
+        <li><span class="estado-badge" style="background:#1e40af;">Resuelto</span> — su problema ya fue solucionado</li>
+    </ul>
+
+    <h3>4.6 Salir del sistema</h3>
+    <p>Para salir, haga clic en <strong>"Salir"</strong> o <strong>"Cambiar Usuario"</strong> en el menú de arriba. Esto lo devuelve a la página de inicio.</p>
+
+    <!-- ============================================================ -->
+    <h2 id="tecnico">5. Cómo usar el sistema siendo Técnico</h2>
+
+    <p>Esta parte explica todo lo que puede hacer un técnico con su usuario y contraseña.</p>
+
+    <h3>5.1 Panel principal</h3>
+    <p>Al entrar, el técnico ve su panel con los reportes que le asignaron.</p>
+
+    <div class="visual-box">
+        <strong>🖥️ Así se ve el panel principal del Técnico:</strong><br><br>
+        <strong>Buscadores arriba:</strong>
+        <ul>
+            <li><strong>Buscar:</strong> casilla para escribir y buscar por nombre o descripción</li>
+            <li><strong>Estado:</strong> lista para elegir qué estado ver (Todos, Abierto, En Proceso, Pendiente, Resuelto)</li>
+            <li><strong>Desde / Hasta:</strong> para elegir un rango de fechas</li>
+            <li>Botón <strong>"Filtrar"</strong> para aplicar los buscadores</li>
+            <li>Botón <strong>"+ Nuevo Ticket"</strong> para crear reportes en nombre de los usuarios</li>
+        </ul>
+        <strong>Tarjetas de resumen (5 tarjetas en fila):</strong>
+        <ul>
+            <li>Total, Abiertos <span class="estado-badge" style="background:#166534;">🟢</span>, En Proceso <span class="estado-badge" style="background:#92400e;">🟠</span>, Pendientes <span class="estado-badge" style="background:#991b1b;">🔴</span>, Resueltos <span class="estado-badge" style="background:#1e40af;">🔵</span></li>
+        </ul>
+        <strong>Lista de reportes:</strong>
+        <ul>
+            <li>Columnas: Código, Solicitante, Descripción (corta), Estado (etiqueta de color), Fecha, Acciones</li>
+            <li>Botones: "Ver" (azul) para abrir, "PDF" (rojo) para descargar</li>
+        </ul>
+    </div>
+
+    <h3>5.2 Detalle de un reporte — Vista del Técnico</h3>
+    <div class="step">
+        <ol>
+            <li>En el panel principal, haga clic en <strong>"Ver"</strong> sobre el reporte que quiere atender</li>
+            <li>La pantalla se divide en dos partes</li>
+        </ol>
+    </div>
+
+    <div class="visual-box">
+        <strong>🖥️ Así se ve el detalle de un reporte para el Técnico:</strong><br><br>
+        <strong>Lado izquierdo — Información del reporte:</strong>
+        <ul>
+            <li>Código, Solicitante, Contacto, Área, Estado, Técnico, Tipo de falla, Fechas, Descripción, Notas</li>
+        </ul>
+        <strong>Lado derecho — Análisis y acciones:</strong>
+        <ul>
+            <li><strong>Recuadro "Análisis del problema":</strong> con borde azul. Muestra qué tipo de falla detectó el sistema y una sugerencia para atenderlo</li>
+            <li><strong>Formulario "Actualizar Ticket":</strong>
+                <ul>
+                    <li><strong>Estado:</strong> lista para cambiar el estado</li>
+                    <li><strong>Tipo de falla:</strong> casillas para marcar (Hardware, Software, Red, Solicitud)</li>
+                    <li><strong>Notas:</strong> área para escribir comentarios de lo que hizo</li>
+                </ul>
+            </li>
+            <li>Botón <strong>"Guardar Cambios"</strong></li>
+        </ul>
+        <strong>Qué hacer:</strong> Cambie el estado según avance. Escriba notas de lo que hizo. Cuando solucione el problema, cámbielo a "Resuelto". El usuario recibirá un aviso del cambio.
+    </div>
+
+    <div class="note">
+        <strong>Recuerde:</strong> El técnico puede cambiar el estado, el tipo de falla y escribir notas. NO puede cambiar qué técnico atiende el reporte ni crear usuarios. Eso solo lo hace el administrador.
+    </div>
+
+    <h3>5.3 Crear un reporte desde el sistema</h3>
+    <div class="step">
+        <ol>
+            <li>Desde el panel principal, haga clic en <strong>"+ Nuevo Ticket"</strong></li>
+            <li>Complete: nombre de quien reporta, contacto, área, tipo de falla, descripción</li>
+            <li>Haga clic en <strong>"Generar Ticket"</strong></li>
+        </ol>
+    </div>
+
+    <div class="visual-box">
+        <strong>🖥️ Así se ve el formulario de creación para el personal:</strong><br><br>
+        Recuadro blanco con:
+        <ul>
+            <li>Solicitante: casilla para escribir el nombre</li>
+            <li>Contacto: casilla para correo o teléfono</li>
+            <li>Dirección/Área: lista para elegir el área</li>
+            <li>Tipo de falla: casillas para marcar (Hardware, Software, Red, Solicitud de servicio)</li>
+            <li>Descripción: área grande para escribir el problema</li>
+            <li>Botón "Generar Ticket"</li>
+        </ul>
+    </div>
+
+    <!-- ============================================================ -->
+    <h2 id="admin">6. Cómo usar el sistema siendo Administrador</h2>
+
+    <p>El administrador tiene acceso completo a todo el sistema. Su panel principal muestra todos los reportes de la organización.</p>
+
+    <h3>6.1 Panel principal del Administrador</h3>
+    <div class="visual-box">
+        <strong>🖥️ Así se ve el panel principal del Administrador:</strong><br><br>
+        <strong>Buscadores (más opciones que el técnico):</strong>
+        <ul>
+            <li><strong>Buscar:</strong> casilla para buscar por texto</li>
+            <li><strong>Estado:</strong> lista para filtrar por estado</li>
+            <li><strong>Técnico:</strong> lista para filtrar por técnico (solo administradores)</li>
+            <li><strong>Desde / Hasta:</strong> fechas</li>
+            <li>Botones: "📄 PDF" y "📊 Excel" para exportar datos</li>
+            <li>Botón <strong>"Filtrar"</strong></li>
+            <li>Botón <strong>"+ Nuevo Ticket"</strong></li>
+        </ul>
+        <strong>Tarjetas de resumen:</strong> igual que el técnico pero con datos de TODO el sistema.<br><br>
+        <strong>Lista de reportes:</strong> igual que el técnico, pero muestra TODOS los reportes sin excepción.
+    </div>
+
+    <h3>6.2 Detalle de un reporte — Vista del Administrador</h3>
+    <div class="visual-box">
+        <strong>🖥️ Así se ve el detalle de un reporte para el Administrador:</strong><br><br>
+        Misma estructura que el técnico, pero con campos adicionales:
+        <ul>
+            <li><strong>Técnico asignado:</strong> lista para elegir qué técnico atenderá el reporte</li>
+            <li><strong>"Lo atenderé yo":</strong> casilla que al marcarlo lo asigna a usted mismo</li>
+        </ul>
+        <strong>Qué hacer:</strong> Como administrador, puede reasignar reportes entre técnicos, auto-asignarse y modificar cualquier campo.
+    </div>
+
+    <div class="info">
+        <strong>Asignación automática:</strong> Los reportes nuevos se asignan solos a un técnico si el sistema detecta que es Hardware, Software o Red. Si no logra identificar el tipo, queda sin técnico para que el administrador lo asigne manualmente.
+    </div>
+
+    <h3>6.3 Gestión de Usuarios</h3>
+    <p>Entre al menú <strong>"Usuarios"</strong> en la barra de arriba (solo visible para administradores).</p>
+
+    <div class="visual-box">
+        <strong>🖥️ Así se ve la pantalla de Usuarios:</strong><br><br>
+        <strong>Formulario izquierdo — "Crear Nuevo Usuario":</strong>
+        <ul>
+            <li>Nombre de usuario</li>
+            <li>Nombre y Apellido</li>
+            <li>Contraseña</li>
+            <li>Elegir rol: Administrador (rojo) / Técnico (azul)</li>
+            <li>Botón "Crear Usuario"</li>
+        </ul>
+        <strong>Tabla derecha — "Usuarios Existentes":</strong>
+        <ul>
+            <li>Columnas: Usuario, Nombre Completo, Rol (rojo=Admin, azul=Técnico), Acciones</li>
+            <li><strong>Acciones:</strong> Editar ✏️, Cambiar Contraseña 🔑, Eliminar 🗑️</li>
+        </ul>
+        <strong>Qué hacer:</strong>
+        <ul>
+            <li><strong>Editar:</strong> abre una ventana para cambiar nombre de usuario, nombre completo y rol</li>
+            <li><strong>Cambiar Contraseña:</strong> abre una ventana para escribir la nueva contraseña</li>
+            <li><strong>Eliminar:</strong> pide confirmación y elimina el usuario (no se puede eliminar a uno mismo)</li>
+        </ul>
+    </div>
+
+    <div class="info">
+        <strong>Bitácora (Registro de actividades):</strong> Desde el menú "Bitácora" puede ver un registro de todo lo que se hace en el sistema: inicios de sesión, creación de reportes, cambios, etc. Puede filtrar por tipo de actividad y buscar por texto.
+    </div>
+
+    <!-- ============================================================ -->
+    <h2 id="reportes">7. Reportes y gráficos</h2>
+
+    <p>En la sección Reportes puede ver estadísticas con gráficos de colores. Entre desde el menú <strong>"Reportes"</strong>.</p>
+
+    <div class="visual-box">
+        <strong>📊 Así se ve la página de Reportes:</strong><br><br>
+        <strong>1. Reportes por Estado (Gráfico de dona):</strong>
+        <ul>
+            <li>Un círculo con un agujero en el centro, partido en pedazos de colores</li>
+            <li>Cada color es un estado: <span style="color:#E86A6E;">● Abierto (rojo)</span>, <span style="color:#4DB8F7;">● En Proceso (azul)</span>, <span style="color:#3347A0;">● Pendiente (azul oscuro)</span>, <span style="color:#4DAF6E;">● Resuelto (verde)</span></li>
+            <li>Cada pedazo muestra el número y el porcentaje</li>
+            <li>Debajo del gráfico hay una lista con los nombres y colores</li>
+            <li><strong>Haga clic</strong> en cualquier pedazo para ir al panel principal y ver solo esos reportes</li>
+        </ul>
+
+        <strong>2. Reportes por Tipo (Gráfico de pastel):</strong>
+        <ul>
+            <li>Igual al anterior pero sin agujero</li>
+            <li>Colores por tipo: <span style="color:#E86A6E;">● Hardware (rojo)</span>, <span style="color:#5A63F7;">● Software (índigo)</span>, <span style="color:#3347A0;">● Red (azul oscuro)</span>, <span style="color:#4DAF6E;">● Solicitud (verde)</span></li>
+        </ul>
+
+        <strong>3. Reportes por Dirección (Barras verticales):</strong>
+        <ul>
+            <li>Barras paradas, ordenadas de la A a la Z por nombre de área</li>
+            <li>El número y el porcentaje van escritos dentro de cada barra</li>
+            <li>El nombre del área está inclinado en la base</li>
+        </ul>
+
+        <strong>4. Reportes por Técnico (Barras horizontales) — Solo Administrador:</strong>
+        <ul>
+            <li>Barras acostadas con el nombre del técnico a la izquierda</li>
+            <li>Muestra quiénes tienen más reportes asignados</li>
+        </ul>
+
+        <strong>5. Reportes por Período (Barras verticales):</strong>
+        <ul>
+            <li>Barras que muestran los reportes creados en el tiempo</li>
+            <li>Arriba hay botones para cambiar: <strong>Trimestre | Semestre | Año</strong></li>
+            <li>Al hacer clic en un botón, el gráfico cambia al instante</li>
+        </ul>
+    </div>
+
+    <div class="visual-box">
+        <strong>🔍 Filtros activos debajo del título:</strong>
+        <ul>
+            <li>Al hacer clic en cualquier pedazo de un gráfico o barra, se agrega un filtro como una etiqueta redondeada debajo del título "Reportes y Gráficos"</li>
+            <li>Ejemplo de etiquetas: <span style="display:inline-flex; flex-wrap:wrap; gap:4px; white-space:nowrap;"><span class="demo-tag" style="background:#e2e8f0; padding:3px 10px; border-radius:12px; font-size:12px;">Estado: Abierto ✕</span> <span class="demo-tag" style="background:#e2e8f0; padding:3px 10px; border-radius:12px; font-size:12px;">Tipo: Hardware ✕</span></span></li>
+            <li>Puede tener varios filtros al mismo tiempo. Se combinan para mostrar solo los reportes que cumplen TODAS las condiciones</li>
+            <li>Para quitar un filtro, haga clic en la "✕" de esa etiqueta</li>
+            <li>Para quitar todos los filtros de una vez, haga clic en el botón "Limpiar filtros"</li>
+        </ul>
+
+        <strong>📋 Resumen debajo de los filtros:</strong>
+        <ul>
+            <li>Después de los filtros, aparece una fila de tarjetas pequeñas con los números de cada categoría del gráfico</li>
+            <li>Cada tarjeta muestra: el nombre de la categoría, la cantidad de reportes y el porcentaje</li>
+            <li>Si aplica filtros, los números y porcentajes cambian para reflejar solo los reportes filtrados</li>
+        </ul>
+    </div>
+
+    <div class="note">
+        <strong>Diferencia entre Técnico y Administrador:</strong> El técnico solo ve sus propias estadísticas. El administrador ve las estadísticas de TODO el sistema. El gráfico de "Reportes por Técnico" solo lo ve el administrador.
+    </div>
+
+    <!-- ============================================================ -->
+    <h2 id="notificaciones">8. Notificaciones y avisos</h2>
+
+    <p>El sistema avisa cuando algo importante pasa, como que le asignen un reporte o que cambie de estado.</p>
+
+    <div class="visual-box">
+        <strong>🔔 Así funcionan los avisos:</strong><br><br>
+
+        <strong>Campanita en el menú de arriba:</strong>
+        <ul>
+            <li>Siempre hay una campanita 🔔 a la derecha</li>
+            <li>Si tiene avisos sin leer, aparece un círculo rojo con el número</li>
+            <li>Ejemplo: 🔔 <span style="background:#D92938; color:#fff; border-radius:50%; padding:1px 6px; font-size:11px; vertical-align:super;">3</span> significa que tiene 3 avisos sin leer</li>
+        </ul>
+
+        <strong>Lista de avisos:</strong>
+        <ul>
+            <li>Al hacer clic en la campanita, se abre una lista desde la derecha</li>
+            <li>Cada aviso muestra un mensaje (ej: "Se te ha asignado el ticket TKT-0001")</li>
+            <li>Los no leídos tienen el fondo más claro</li>
+            <li>Al hacer clic en un aviso, se marca como leído y lo lleva al reporte</li>
+            <li>Los avisos se actualizan solos cada 30 segundos</li>
+        </ul>
+
+        <strong>Aviso flotante (ventana emergente):</strong>
+        <ul>
+            <li>Cuando llega un aviso nuevo, aparece un mensaje flotante en una esquina</li>
+            <li>Muestra el texto del aviso</li>
+            <li>Se cierra solo después de 5 segundos</li>
+            <li>Puede hacer clic en él para ir al reporte</li>
+            <li>Suena un sonido (puede cambiarlo en la configuración)</li>
+            <li>La posición del aviso se puede cambiar a cualquiera de las 4 esquinas</li>
+        </ul>
+    </div>
+
+    <!-- ============================================================ -->
+    <h2 id="config">9. Configuración personal</h2>
+
+    <p>Puede cambiar cómo se ve el sistema y cómo funcionan los avisos. Haga clic en el engranaje ⚙️ en el menú de arriba.</p>
+
+    <div class="visual-box">
+        <strong>⚙️ Así se ve el panel de configuración:</strong><br><br>
+        Se abre un panel por la derecha con 4 opciones:
+
+        <br><br>
+        <strong>1. Tema (colores del sistema):</strong>
+        <ul>
+            <li>☀️ <strong>Claro</strong> — fondo blanco, letras oscuras</li>
+            <li>🌙 <strong>Oscuro</strong> — fondo oscuro, letras claras</li>
+            <li>💻 <strong>Sistema</strong> — se adapta solo al tema de su computadora</li>
+            <li>El cambio se ve al instante</li>
+        </ul>
+
+        <strong>2. Tamaño de letra:</strong>
+        <ul>
+            <li><strong>A⁻ Pequeño</strong> — letras más compactas</li>
+            <li><strong>A Mediano</strong> — tamaño normal</li>
+            <li><strong>A⁺ Grande</strong> — letras más grandes para leer mejor</li>
+        </ul>
+
+        <strong>3. Sonido de aviso:</strong>
+        <ul>
+            <li>Lista con 7 sonidos para elegir</li>
+            <li>Botón "▶ Vista" para escuchar cada sonido antes de elegirlo</li>
+        </ul>
+
+        <strong>4. Lugar donde aparece el aviso flotante:</strong>
+        <ul>
+            <li>⬇➡ <strong>Inferior derecha</strong></li>
+            <li>⬇⬅ <strong>Inferior izquierda</strong></li>
+            <li>⬆➡ <strong>Superior derecha</strong></li>
+            <li>⬆⬅ <strong>Superior izquierda</strong></li>
+        </ul>
+
+        <strong>Importante:</strong> La configuración se guarda sola en su navegador. Aunque cierre sesión o reinicie el navegador, sus preferencias se quedan. Cada persona tiene su propia configuración.
+    </div>
+
+    <!-- ============================================================ -->
+    <h2 id="estados">10. Estados de los reportes</h2>
+
+    <p>Los reportes pasan por diferentes estados. Cada uno tiene un color distinto para identificarlos fácilmente.</p>
+
+    <div style="overflow-x: auto;">
+    <table>
+        <tr><th>Estado</th><th>Color</th><th>¿Qué significa?</th><th>¿Quién lo cambia?</th></tr>
+        <tr>
+            <td><strong>Abierto</strong></td>
+            <td><span class="estado-badge" style="background:#166534;">Verde</span></td>
+            <td>El reporte acaba de llegar. Nadie lo ha atendido aún.</td>
+            <td>El sistema (automático)</td>
+        </tr>
+        <tr>
+            <td><strong>En Proceso</strong></td>
+            <td><span class="estado-badge" style="background:#92400e;">Naranja</span></td>
+            <td>Un técnico ya está trabajando en resolverlo.</td>
+            <td>Técnico o Administrador</td>
+        </tr>
+        <tr>
+            <td><strong>Pendiente</strong></td>
+            <td><span class="estado-badge" style="background:#991b1b;">Rojo</span></td>
+            <td>Está esperando algo: más datos del usuario, repuestos, etc.</td>
+            <td>Técnico o Administrador</td>
+        </tr>
+        <tr>
+            <td><strong>Resuelto</strong></td>
+            <td><span class="estado-badge" style="background:#1e40af;">Azul</span></td>
+            <td>El problema ya está solucionado. Es el estado final.</td>
+            <td>Técnico o Administrador</td>
+        </tr>
+        </table>
+    </div>
+
+    <div class="visual-box">
+        <strong>🔄 Recorrido de un reporte:</strong>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin:15px 0; flex-wrap:wrap; gap:5px;">
+            <span style="background:#166534; color:#fff; padding:6px 14px; border-radius:20px; font-size:13px;">🟢 Abierto</span>
+            <span style="font-size:20px; color:#94a3b8;">→</span>
+            <span style="background:#92400e; color:#fff; padding:6px 14px; border-radius:20px; font-size:13px;">🟠 En Proceso</span>
+            <span style="font-size:20px; color:#94a3b8;">→</span>
+            <span style="background:#991b1b; color:#fff; padding:6px 14px; border-radius:20px; font-size:13px;">🔴 Pendiente</span>
+            <span style="font-size:20px; color:#94a3b8;">↺</span>
+            <span style="background:#92400e; color:#fff; padding:6px 14px; border-radius:20px; font-size:13px;">🟠 En Proceso</span>
+            <span style="font-size:20px; color:#94a3b8;">→</span>
+            <span style="background:#1e40af; color:#fff; padding:6px 14px; border-radius:20px; font-size:13px;">🔵 Resuelto</span>
+        </div>
+        <p style="margin:5px 0 0; font-size:13px;">Las flechas muestran cómo puede ir cambiando. De Pendiente solo se puede volver a En Proceso. Resuelto es el estado final.</p>
+        <p style="margin:5px 0 0; font-size:13px;">Cada vez que cambia el estado: el técnico y el usuario reciben un aviso, se guarda en la bitácora y se actualiza la fecha.</p>
+    </div>
+
+    <!-- ============================================================ -->
+    <h2 id="exportar">11. Exportar datos</h2>
+
+    <p>Los administradores pueden descargar los reportes desde el panel principal. Las descargas incluyen solo los reportes que se están viendo en ese momento (con los filtros aplicados).</p>
+
+    <div class="visual-box">
+        <strong>📦 Tipos de descarga:</strong><br><br>
+
+        <strong>📄 PDF de un solo reporte:</strong>
+        <ul>
+            <li>Botón "PDF" en cada fila de la lista del panel principal</li>
+            <li>También hay un botón "PDF" en la vista de detalle del reporte</li>
+            <li>Descarga un documento con: logo, datos del reporte, descripción y notas</li>
+        </ul>
+
+        <strong>📄 PDF de varios reportes:</strong>
+        <ul>
+            <li>Botón "📄 PDF" arriba de la lista (solo administradores)</li>
+            <li>Descarga un documento con todos los reportes que se están viendo</li>
+        </ul>
+
+        <strong>📊 Exportar a Excel:</strong>
+        <ul>
+            <li>Botón "📊 Excel" arriba de la lista (solo administradores)</li>
+            <li>Descarga un archivo que se abre en Excel con todos los datos de los reportes</li>
+        </ul>
+    </div>
+
+    <div class="info">
+        <strong>Importante:</strong> Si tiene filtros puestos (por estado, técnico o fechas), las descargas solo incluirán los reportes que coincidan con esos filtros.
+    </div>
+
+    <div class="manual-footer">
+        <p>Sistema de Soporte Técnico v4.1 &copy; 2026</p>
+        <p>Creado por: Ing. D'angelo Iriarte — Dirección de Tecnología</p>
+    </div>
+
+    </div>
+</div>
+{% endblock %}

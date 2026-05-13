@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Bitácora de Auditoría - Soporte Técnico{% endblock %}
+
+{% block extra_css %}
+<style>
+.audit-container { max-width: 1200px; margin: 0 auto; }
+.audit-container h1 { color: var(--text, #1e293b); border-bottom: 3px solid #D92938; padding-bottom: 10px; margin-bottom: 20px; font-size: 24px; }
+.audit-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+.audit-table th, .audit-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border, #e2e8f0); }
+.audit-table th { background: var(--table-header-bg, #f8fafc); color: var(--text, #1e293b); font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+.audit-table tr:nth-child(even) { background: transparent; }
+.audit-table tr:hover { background: var(--table-hover-bg, #f8fafc); }
+.audit-table .badge-accion { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+.badge-login { background: #dcfce7; color: #166534; }
+.badge-login-failed { background: #fee2e2; color: #991b1b; }
+.badge-logout { background: #f3e8ff; color: #6b21a8; }
+.badge-crear { background: #dbeafe; color: #1e40af; }
+.badge-editar { background: #fef3c7; color: #92400e; }
+.badge-eliminar { background: #fee2e2; color: #991b1b; }
+.badge-acceso { background: #e0f2fe; color: #075985; }
+.badge-cambiar-password { background: #fce7f3; color: #9d174d; }
+[data-theme="dark"] .badge-login { background: #064e3b; color: #6ee7b7; }
+[data-theme="dark"] .badge-acceso { background: #0c4a6e; color: #7dd3fc; }
+[data-theme="dark"] .badge-login-failed { background: #7f1d1d; color: #fca5a5; }
+[data-theme="dark"] .badge-logout { background: #4c1d95; color: #d8b4fe; }
+[data-theme="dark"] .badge-crear { background: #1e3a5f; color: #93c5fd; }
+[data-theme="dark"] .badge-editar { background: #78350f; color: #fcd34d; }
+[data-theme="dark"] .badge-eliminar { background: #7f1d1d; color: #fca5a5; }
+[data-theme="dark"] .badge-cambiar-password { background: #831843; color: #f9a8d4; }
+.filters-row { display: flex; gap: 1rem; align-items: end; flex-wrap: wrap; margin-bottom: 1rem; }
+.filters-row .form-group { margin-bottom: 0; }
+.pagination-info { color: var(--text-light, #64748b); font-size: 13px; margin-top: 10px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="audit-container">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+        <h1>📋 Bitácora de Auditoría</h1>
+
+    </div>
+
+    <div class="card" style="padding: 1.25rem;">
+        <form method="get" class="filters-row">
+            <div class="form-group">
+                <label>Acción</label>
+                <select name="accion" class="form-select" onchange="this.form.submit()">
+                    <option value="">Todas</option>
+                    {% for codigo, etiqueta in acciones %}
+                        <option value="{{ codigo }}" {% if accion_filtro == codigo %}selected{% endif %}>{{ etiqueta }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Buscar</label>
+                <input type="text" name="buscar" value="{{ buscar|default:'' }}" class="form-control" placeholder="Usuario, detalle o IP...">
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Filtrar</button>
+                <a href="{% url 'auditoria_list' %}" class="btn btn-secondary">Limpiar</a>
+            </div>
+        </form>
+
+        {% if registros %}
+        <div class="table-responsive">
+            <table class="audit-table">
+                <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Dirección/Departamento</th>
+                        <th>Acción</th>
+                        <th>Dirección IP</th>
+                        <th>Fecha/Hora</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in registros %}
+                    <tr>
+                        <td><strong>{{ r.nombre_completo }}</strong></td>
+                        <td>{{ r.direccion_area|default:'-' }}</td>
+                        <td>
+                            <span class="badge-accion badge-{{ r.accion|lower }}">
+                                {{ r.get_accion_display }}
+                            </span>
+                        </td>
+                        <td><code>{{ r.direccion_ip }}</code></td>
+                        <td>{{ r.fecha|date:"d/m/Y H:i:s" }}</td>
+                        <td>
+                            <a href="{% url 'auditoria_detalle' r.pk %}" class="btn btn-sm btn-primary">Ver</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination-info">
+            Página {{ registros.number }} de {{ registros.paginator.num_pages }}
+            ({{ registros.paginator.count }} registros)
+        </div>
+
+        {% if registros.has_other_pages %}
+        <div style="margin-top: 1rem; display: flex; gap: 0.3rem; flex-wrap: wrap;">
+            {% if registros.has_previous %}
+                <a href="?page=1{% if accion_filtro %}&accion={{ accion_filtro }}{% endif %}{% if buscar %}&buscar={{ buscar }}{% endif %}" class="btn btn-sm btn-secondary">&laquo;</a>
+                <a href="?page={{ registros.previous_page_number }}{% if accion_filtro %}&accion={{ accion_filtro }}{% endif %}{% if buscar %}&buscar={{ buscar }}{% endif %}" class="btn btn-sm btn-secondary">&lsaquo;</a>
+            {% endif %}
+            {% for num in registros.paginator.page_range %}
+                {% if num == registros.number %}
+                    <span class="btn btn-sm btn-primary">{{ num }}</span>
+                {% elif num > registros.number|add:'-3' and num < registros.number|add:'3' %}
+                    <a href="?page={{ num }}{% if accion_filtro %}&accion={{ accion_filtro }}{% endif %}{% if buscar %}&buscar={{ buscar }}{% endif %}" class="btn btn-sm btn-secondary">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+            {% if registros.has_next %}
+                <a href="?page={{ registros.next_page_number }}{% if accion_filtro %}&accion={{ accion_filtro }}{% endif %}{% if buscar %}&buscar={{ buscar }}{% endif %}" class="btn btn-sm btn-secondary">&rsaquo;</a>
+                <a href="?page={{ registros.paginator.num_pages }}{% if accion_filtro %}&accion={{ accion_filtro }}{% endif %}{% if buscar %}&buscar={{ buscar }}{% endif %}" class="btn btn-sm btn-secondary">&raquo;</a>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% else %}
+        <div class="note" style="margin-top: 1rem;">
+            No hay registros de auditoría disponibles.
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
