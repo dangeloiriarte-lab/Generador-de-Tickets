@@ -1,4 +1,4 @@
-# Generador de Tickets de Soporte Técnico v4.1
+# Generador de Tickets de Soporte Técnico v4.2
 
 Sistema web para gestión de tickets de soporte técnico con tres tipos de usuarios:
 - **Usuario común**: Accede al formulario público para reportar fallas (sin login)
